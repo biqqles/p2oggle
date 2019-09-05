@@ -22,9 +22,10 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class SettingsFragment() : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
-    private lateinit var sharedPreferences: SharedPreferences  // SharedPreferences does not support multi-process...
+    private lateinit var sharedPreferences: SharedPreferences  // SharedPreferences does not work across processes...
     private lateinit var multiprocessPreferences: TreasurePreferences  // so we mirror it to an implementation that does
     private lateinit var activityManager: ActivityManager
+    private var statTimer = Timer()
 
     override fun onAttach(context: Context) {
         // Called when added to activity.
@@ -33,7 +34,6 @@ class SettingsFragment() : PreferenceFragmentCompat(), SharedPreferences.OnShare
         PreferenceManager.setDefaultValues(context, R.xml.preferences, true)  // only runs once
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         multiprocessPreferences = TreasurePreferences.getInstance(context, "service")
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         activityManager = activity!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     }
@@ -48,7 +48,7 @@ class SettingsFragment() : PreferenceFragmentCompat(), SharedPreferences.OnShare
         val actionScreenOff = findPreference<ListPreference>("action_screen_off")
         val actionScreenOn = findPreference<ListPreference>("action_screen_on")
 
-        val entries = SwitchService.switchables.entries.associate{it.key to getString(it.value.name)}
+        val entries = SwitchService.switchables.entries.associate { it.key to getString(it.value.name) }
 
         for (preference in arrayOf(actionScreenOff, actionScreenOn)) {
             preference!!.entryValues = entries.keys.toTypedArray()
@@ -66,9 +66,17 @@ class SettingsFragment() : PreferenceFragmentCompat(), SharedPreferences.OnShare
                 putExtra(Settings.EXTRA_CHANNEL_ID, SwitchService.NOTIFICATION_CHANNEL_ID)
             }
         }
+    }
+
+    override fun onResume() {
+        // Called on parent activity resume, after onCreatePreferences if applicable.
+        super.onResume()
+
+        // begin mirroring preference changes
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         // begin polling statistics
-        Timer().scheduleAtFixedRate(object : TimerTask() {
+        statTimer.scheduleAtFixedRate(object : TimerTask() {
             val statPreference = findPreference<Preference>("service_stats")
             override fun run() {
                 activity?.runOnUiThread {
@@ -76,6 +84,14 @@ class SettingsFragment() : PreferenceFragmentCompat(), SharedPreferences.OnShare
                 }
             }
         }, 0, STAT_UPDATE_PERIOD_MS)
+    }
+
+    override fun onPause() {
+        // Called on parent activity pause.
+        super.onPause()
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        statTimer.cancel()
+        statTimer = Timer()  // a Timer that has been cancelled can't be restarted
     }
 
     override fun onSharedPreferenceChanged(sp: SharedPreferences, key: String) {
