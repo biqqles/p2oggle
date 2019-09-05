@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name" translatable="false">P2oggle</string>
+
+    <!--Service/notification strings-->
+    <string name="service_notification_title">P2oggle is running</string>
+    <string name="service_notification_name">Service running</string>
+    <string name="service_notification_description">Android requires long-running services to present notifications.
+                                                    You can safely hide these without losing functionality</string>
+    <string name="service_notification_configure">Configure</string>
+    <string name="service_notification_hide">Hide</string>
+    <string name="service_description">Listening for switch input</string>
+    <string name="service_enabled">Service enabled</string>
+    <string name="service_disabled">Service disabled</string>
+
+    <!--Preference strings-->
+    <string name="pref_category_service">Service</string>
+    <string name="pref_title_start_on_boot">Start on boot</string>
+    <string name="pref_title_notification">Notification settings</string>
+    <string name="pref_title_stats">Statistics</string>
+    <string name="pref_summary_stats">Memory: %1$s | Uptime: %2$s</string>
+
+    <string name="pref_category_overlay">Overlay</string>
+    <string name="pref_title_overlay_enable">Enable</string>
+    <string name="pref_title_overlay_text">Show text</string>
+
+    <string name="pref_category_actions">Actions</string>
+    <string name="pref_title_action_screen_off">While screen off, toggle</string>
+    <string name="pref_title_action_screen_on">While screen on, toggle</string>
+
+    <string name="view_repo_title">Visit project repository</string>
+    <string name="view_repo_url" translatable="false">"https://github.com/biqqles/p2oggle"</string>
+    <string name="pref_title_thread">Visit project thread</string>
+    <string name="pref_thread_url" translatable="false">TODO</string>  <!--todo-->
+
+    <!--Dialogue messages-->
+    <string name="request_root">This app needs to run as superuser.
+                                If you are rooted, please give P2oggle root access.</string>
+    <string name="evdev_issue">Your device doesn\'t appear to be compatible with P2oggle.
+                               Please refer to the project thread for assistance.</string>
+    <string name="wrong_device">This app is for the Lenovo P2, which your device doesn\'t seem to be.</string>
+    <string name="request_permission">Please enable P2oggle</string>
+
+    <!--Action strings-->
+    <string name="off">" off"</string>
+    <string name="on">" on"</string>
+    <string name="action_nothing">Nothing</string>
+    <string name="action_flashlight">Flashlight</string>
+    <string name="action_dnd">Silent mode</string>
+    <string name="action_wifi">Wi-Fi</string>
+    <string name="action_aeroplane">Aeroplane mode</string>
+    <string name="action_power_saver">Battery saver</string>
+    <string name="action_bluetooth">Bluetooth</string>
+    <string name="action_nfc">NFC</string>
+    <string name="action_data">Mobile data</string>
+
+</resources>

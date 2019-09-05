@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/serviceSwitch"
+          android:title=""
+          app:actionLayout="@layout/toolbar_switch"
+          tools:ignore="AlwaysShowAction"
+          app:showAsAction="always" />
+
+    <item android:id="@+id/viewThread"
+          android:title="@string/pref_title_thread"
+          app:showAsAction="never" />
+
+    <item android:id="@+id/viewRepo"
+          android:title="@string/view_repo_title"
+          app:showAsAction="never" />
+
+</menu>

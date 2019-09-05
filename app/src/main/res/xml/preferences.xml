@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/pref_category_actions"
+                        app:iconSpaceReserved="false">  <!--hide annoying margin PreferenceFragmentCompat insists on-->
+        <ListPreference
+                android:key="action_screen_on"
+                android:title="@string/pref_title_action_screen_on"
+                android:summary="%s"
+                android:layout="@layout/action_preference"
+                android:defaultValue="Nothing"
+                app:iconSpaceReserved="false" />
+
+        <ListPreference
+                android:key="action_screen_off"
+                android:title="@string/pref_title_action_screen_off"
+                android:summary="%s"
+                android:layout="@layout/action_preference"
+                android:defaultValue="Nothing"
+                app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_overlay"
+                        app:iconSpaceReserved="false">
+        <CheckBoxPreference
+                android:key="show_overlay"
+                android:title="@string/pref_title_overlay_enable"
+                android:defaultValue="true"
+                app:iconSpaceReserved="false" />
+
+        <CheckBoxPreference
+                android:key="overlay_text"
+                android:title="@string/pref_title_overlay_text"
+                android:defaultValue="true"
+                app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_service"
+                        app:iconSpaceReserved="false">
+        <CheckBoxPreference
+                android:key="start_on_boot"
+                android:title="@string/pref_title_start_on_boot"
+                android:defaultValue="true"
+                app:iconSpaceReserved="false" />
+
+        <Preference
+                android:key="service_notification"
+                android:title="@string/pref_title_notification"
+                app:iconSpaceReserved="false">
+            <intent android:action="android.settings.CHANNEL_NOTIFICATION_SETTINGS" >
+                <extra android:name="android.provider.extra.APP_PACKAGE" android:value="eu.biqqles.p2oggle" />
+            </intent>
+        </Preference>
+
+        <Preference
+                android:key="service_stats"
+                android:title="@string/pref_title_stats"
+                app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

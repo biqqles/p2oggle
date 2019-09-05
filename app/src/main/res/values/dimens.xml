@@ -1,0 +1,7 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="status_bar_height">24dp</dimen>
+    <dimen name="overlay_corner_radius">10dp</dimen>
+    <dimen name="overlay_text_size">14sp</dimen>
+    <dimen name="overlay_padding">4dp</dimen>
+</resources>

@@ -1,0 +1,33 @@
+<!--
+  ~  Copyright © 2019 biqqles.
+  ~
+  ~  This Source Code Form is subject to the terms of the Mozilla Public
+  ~  License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:background="@drawable/bg_overlay"
+              android:padding="@dimen/overlay_padding"
+              android:gravity="center"
+              android:layout_gravity="center"
+              android:orientation="horizontal"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
+
+    <ImageView
+            android:id="@+id/overlayIcon"
+            android:src="@drawable/ic_toggle_on"
+            android:tint="@color/colorAccent"
+            android:layout_marginEnd="@dimen/overlay_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <TextView
+            android:id="@android:id/message"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/overlay_text_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+</LinearLayout>

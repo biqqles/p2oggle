@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="eu.biqqles.p2oggle"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          tools:ignore="GoogleAppIndexingWarning, AllowBackup">
+
+    <!--Core permissions-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--Action permissions-->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <application
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
+
+        <activity
+                android:name=".MainActivity"
+                android:label="@string/app_name"
+                android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--Service things-->
+        <service android:name=".SwitchService"
+                 android:description="@string/service_description"
+                 android:icon="@drawable/ic_toggle_on"
+                 android:directBootAware="true"
+                 android:process=":daemon">  <!--run in separate process-->
+        </service>
+
+        <receiver android:name=".SwitchService$Companion$Starter">        <!--restart service on...-->
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />       <!--       ...boot-->
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />    <!--       ...reboot-->
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />  <!--       ...package update-->
+                <category android:name="android.intent.category.DEFAULT" />  <!--seems required for implicit intents?-->
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
