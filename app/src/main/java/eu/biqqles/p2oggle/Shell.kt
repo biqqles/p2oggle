@@ -14,8 +14,13 @@ object Shell {
     // Utility functions for working with shell commands.
     private val suProcess: Process by lazy {
         // Using a persistent superuser process means we don't ping toasts every time we need to issue a command.
-        assert(isRootAvailable())
+        assert(isRootAvailable)
         Runtime.getRuntime().exec("su")
+    }
+
+    val isRootAvailable: Boolean by lazy {
+        // Test the execution of no-op as root.
+        run("su -c :")
     }
 
     fun run(command: String): Boolean {
@@ -33,10 +38,5 @@ object Shell {
         val input = DataOutputStream(suProcess.outputStream)
         input.writeBytes(command + '\n')
         input.flush()
-    }
-
-    fun isRootAvailable(): Boolean {
-        // Test the execution of no-op as root.
-        return run("su -c :")
     }
 }

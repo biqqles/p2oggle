@@ -26,7 +26,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var preferences: TreasurePreferences
 
     private val ready: Boolean
-        get() = preferences.getBoolean("service_enabled", false) && Shell.isRootAvailable() && Device.ensureReady()
+        get() = preferences.getBoolean("service_enabled", false) && Shell.isRootAvailable && Device.ensureReady()
 
     private inner class OnSwitch : Switchable {
         private val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager

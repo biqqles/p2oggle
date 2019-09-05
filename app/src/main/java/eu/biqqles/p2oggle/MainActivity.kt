@@ -72,11 +72,11 @@ class MainActivity : AppCompatActivity() {
     private fun initialSetup(): Boolean {
         // Complete initial compatibility checks and setup.
         // Return true if all checks pass successfully, otherwise false.
-        if (Build.DEVICE !in COMPATIBLE_DEVICES) {       // check we are on the right device
+        if (Build.DEVICE !in COMPATIBLE_DEVICES) {  // check we are on the right device
             showTerminalDialogue(R.string.wrong_device)
-        } else if (!Shell.isRootAvailable()) {           // check that root is available
+        } else if (!Shell.isRootAvailable) {        // check that root is available
             showTerminalDialogue(R.string.request_root)
-        } else if (!Device.ensureReady()) {              // check switch device is available
+        } else if (!Device.ensureReady()) {         // check switch device is available
             showTerminalDialogue(R.string.evdev_issue)
         } else {
             return true

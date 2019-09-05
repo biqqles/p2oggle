@@ -51,8 +51,7 @@ object Device {
                 "'allow appdomain input_device dir search' " +                   // directory rule
                 "'allow appdomain input_device chr_file { getattr read open }'"  // character device rule
 
-        assert(Shell.isRootAvailable())
-
+        assert(Shell.isRootAvailable)
         // check if character file readable
         if (File(DEVICE_FILE).exists()) {
             return true
