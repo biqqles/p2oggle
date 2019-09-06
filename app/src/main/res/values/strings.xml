@@ -30,7 +30,8 @@
     <string name="view_repo_title">Visit project repository</string>
     <string name="view_repo_url" translatable="false">"https://github.com/biqqles/p2oggle"</string>
     <string name="pref_title_thread">Visit project thread</string>
-    <string name="pref_thread_url" translatable="false">TODO</string>  <!--todo-->
+    <string name="pref_thread_url"
+            translatable="false">"https://forum.xda-developers.com/devdb/project/?id=34190"</string>
 
     <!--Dialogue messages-->
     <string name="request_root">This app needs to run as superuser.
