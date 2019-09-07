@@ -1,0 +1,51 @@
+<resources>
+    <!--Service/notification strings-->
+    <string name="service_notification_title">P2 geçişi çalışıyor</string>
+    <string name="service_notification_name">Servis çalışıyor</string>
+    <string name="service_notification_description">Android bildirimleri sunmak için uzun süre çalışan hizmetler gerektirir.
+                                                     Bu işlevselliği kaybetmeden güvenle gizleyebilirsiniz.</string>
+    <string name="service_notification_configure">Yapılandır</string>
+    <string name="service_notification_hide">Gizle</string>
+    <string name="service_description">Değiştirme girişi için dinleme</string>
+    <string name="service_enabled">Servis etkin</string>
+    <string name="service_disabled">Servis devre dışı</string>
+
+    <!--Preference strings-->
+    <string name="pref_category_service">Servis</string>
+    <string name="pref_title_start_on_boot">Açılışta başlat</string>
+    <string name="pref_title_notification">Bildirim ayarları</string>
+    <string name="pref_title_stats">İstatistikler</string>
+    <string name="pref_summary_stats">Bellek: %1$s | Çalışma süresi: %2$s</string>
+
+    <string name="pref_category_overlay">Tema</string>
+    <string name="pref_title_overlay_enable">Etkinleştir</string>
+    <string name="pref_title_overlay_text">Metni göster</string>
+
+    <string name="pref_category_actions">Eylemler</string>
+    <string name="pref_title_action_screen_off">Ekran kapalıyken geçiş yap</string>
+    <string name="pref_title_action_screen_on">Ekran açıkken geçiş yap</string>
+
+    <string name="view_repo_title">Proje deposunu ziyaret edin</string>
+    <string name="pref_title_thread">Proje konusunu ziyaret edin</string>
+
+    <!--Dialogue messages-->
+    <string name="request_root">Bu uygulama süper kullanıcı olarak çalıştırılması gerekiyor.
+                                 Eğer rootlu iseniz, lütfen P2 geçişine root erişim izni verin.</string>
+    <string name="evdev_issue">Cihazınız P2 geçiş ile uyumlu görünmüyor.
+                                Lütfen yardım için proje konusuna bakınız.</string>
+    <string name="request_permission">Lütfen P2 geçişini etkinleştir</string>
+
+    <!--Action strings-->
+    <string name="off">" kapalı"</string>
+    <string name="on">" açık"</string>
+    <string name="action_nothing">Yok</string>
+    <string name="action_flashlight">El feneri</string>
+    <string name="action_dnd">Sessiz modu</string>
+    <string name="action_wifi">Kablosuz</string>
+    <string name="action_aeroplane">Uçak modu</string>
+    <string name="action_power_saver">Pil tasarrufu</string>
+    <string name="action_bluetooth">Bluetooth</string>
+    <string name="action_nfc">NFC</string>
+    <string name="action_data">Mobil veri</string>
+
+</resources>
