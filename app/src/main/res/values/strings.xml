@@ -38,7 +38,6 @@
                                 If you are rooted, please give P2oggle root access.</string>
     <string name="evdev_issue">Your device doesn\'t appear to be compatible with P2oggle.
                                Please refer to the project thread for assistance.</string>
-    <string name="wrong_device">This app is for the Lenovo P2, which your device doesn\'t seem to be.</string>
     <string name="request_permission">Please enable P2oggle</string>
 
     <!--Action strings-->

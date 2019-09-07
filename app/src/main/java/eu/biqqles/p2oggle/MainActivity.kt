@@ -11,7 +11,6 @@ package eu.biqqles.p2oggle
 import android.animation.LayoutTransition
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
@@ -72,11 +71,9 @@ class MainActivity : AppCompatActivity() {
     private fun initialSetup(): Boolean {
         // Complete initial compatibility checks and setup.
         // Return true if all checks pass successfully, otherwise false.
-        if (Build.DEVICE !in COMPATIBLE_DEVICES) {  // check we are on the right device
-            showTerminalDialogue(R.string.wrong_device)
-        } else if (!Shell.isRootAvailable) {        // check that root is available
+        if (!Shell.isRootAvailable) {
             showTerminalDialogue(R.string.request_root)
-        } else if (!Device.ensureReady()) {         // check switch device is available
+        } else if (!Device.ensureReady()) {
             showTerminalDialogue(R.string.evdev_issue)
         } else {
             return true
@@ -118,9 +115,5 @@ class MainActivity : AppCompatActivity() {
         setMessage(message)
         create()
         show()
-    }
-
-    companion object {
-        val COMPATIBLE_DEVICES = arrayOf("P2a42", "P2c72")  // todo: confirm working on P2c72
     }
 }
