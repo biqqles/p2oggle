@@ -18,10 +18,9 @@ object Shell {
         Runtime.getRuntime().exec("su")
     }
 
-    val isRootAvailable: Boolean by lazy {
-        // Test the execution of no-op as root.
-        run("su -c :")
-    }
+    val isRootAvailable: Boolean
+        // Test the execution of no-op as root. Use this sparingly for the reason outlined above.
+        get() = run("su -c :")
 
     fun run(command: String): Boolean {
         // Execute the given shell command *synchronously*, returning whether successful.
