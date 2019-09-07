@@ -46,14 +46,10 @@ class MainActivity : AppCompatActivity() {
         // add switch and listener
         serviceSwitch = menu.findItem(R.id.serviceSwitch).actionView.findViewById(R.id.toolbarSwitch)
         serviceSwitch.setOnCheckedChangeListener { _, checked ->
-            if (!checked || initialSetup()) {  // if disabling, or enabling *once setup is complete*
-                onServiceToggled(checked)
-            } else {
-                serviceSwitch.isChecked = false  // otherwise, ignore
-            }
+            onServiceToggled(checked && initialSetup())
         }
 
-        onServiceToggled(preferences.getBoolean("service_enabled", false))  // initialise
+        onServiceToggled(preferences.getBoolean("service_enabled", false))  // set initial state
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -72,9 +68,9 @@ class MainActivity : AppCompatActivity() {
         // Complete initial compatibility checks and setup.
         // Return true if all checks pass successfully, otherwise false.
         if (!Shell.isRootAvailable) {
-            showTerminalDialogue(R.string.request_root)
+            showSimpleDialogue(R.string.request_root)
         } else if (!Device.ensureReady()) {
-            showTerminalDialogue(R.string.evdev_issue)
+            showSimpleDialogue(R.string.evdev_issue)
         } else {
             return true
         }
@@ -103,15 +99,15 @@ class MainActivity : AppCompatActivity() {
         // "Peek" a subtitle in the action bar.
         supportActionBar?.setSubtitle(resId)
         Handler().postDelayed({
-            toolbar.layoutTransition = LayoutTransition();
+            toolbar.layoutTransition = LayoutTransition()
             supportActionBar?.subtitle = null  // set visibility to GONE
             toolbar.layoutTransition = LayoutTransition()  // force layout update, this doesn't happen otherwise
         }, timeout)
     }
 
-    private fun showTerminalDialogue(@StringRes message: Int) = with (AlertDialog.Builder(this)) {
-        // Show a dialogue that alerts the user of an irrecoverable failure.
-        setPositiveButton(android.R.string.ok) { _, _ -> finishAndRemoveTask() }
+    private fun showSimpleDialogue(@StringRes message: Int) = with (AlertDialog.Builder(this)) {
+        // Show a simple dialogue with an OK button.
+        setPositiveButton(android.R.string.ok) { dialogue, _ -> dialogue.dismiss() }
         setMessage(message)
         create()
         show()
