@@ -22,6 +22,18 @@
     <string name="pref_category_overlay">Overlay</string>
     <string name="pref_title_overlay_enable">Enable</string>
     <string name="pref_title_overlay_text">Show text</string>
+    <string name="pref_title_overlay_system_theme">Use system accent</string>
+    <string name="pref_title_overlay_bg">Background colour</string>
+    <string-array name="overlay_bg_indices" translatable="false">
+        <item>system</item>
+        <item>dark</item>
+        <item>light</item>
+    </string-array>
+    <string-array name="overlay_bg_values">
+        <item>System</item>
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
 
     <string name="pref_category_actions">Actions</string>
     <string name="pref_title_action_screen_off">While screen off, toggle</string>

@@ -34,6 +34,21 @@
                 android:title="@string/pref_title_overlay_text"
                 android:defaultValue="true"
                 app:iconSpaceReserved="false" />
+
+        <CheckBoxPreference
+                android:key="overlay_system_accent"
+                android:title="@string/pref_title_overlay_system_theme"
+                android:defaultValue="true"
+                app:iconSpaceReserved="false" />
+
+        <ListPreference
+                android:key="overlay_bg_colour"
+                android:title="@string/pref_title_overlay_bg"
+                android:summary="%s"
+                android:entries="@array/overlay_bg_values"
+                android:entryValues="@array/overlay_bg_indices"
+                android:defaultValue="dark"
+                app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_category_service"
@@ -48,9 +63,6 @@
                 android:key="service_notification"
                 android:title="@string/pref_title_notification"
                 app:iconSpaceReserved="false">
-            <intent android:action="android.settings.CHANNEL_NOTIFICATION_SETTINGS" >
-                <extra android:name="android.provider.extra.APP_PACKAGE" android:value="eu.biqqles.p2oggle" />
-            </intent>
         </Preference>
 
         <Preference

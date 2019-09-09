@@ -40,7 +40,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             whileScreenOn = loadSwitchableFromPreferences("action_screen_on")
 
             if (whileScreenOn !is Nothing && preferences.getBoolean("show_overlay", true)) {
-                widget = Overlay(applicationContext, whileScreenOn, preferences.getBoolean("overlay_text", true))
+                widget = Overlay(applicationContext, whileScreenOn, preferences)
             } else {
                 widget = null
             }
@@ -76,7 +76,8 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
 
         preferences = TreasurePreferences.getInstance(this, "service")
         preferences.registerOnSharedPreferenceChangeListener(this,
-            listOf("action_screen_off", "action_screen_on", "show_overlay", "overlay_text"))
+            listOf("action_screen_off", "action_screen_on", "show_overlay", "overlay_text",
+                "overlay_system_accent", "overlay_bg_colour"))
 
         initialiseCallback()
     }
@@ -117,14 +118,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
 
         val appIntent = Intent(this, MainActivity::class.java)  // open this app
 
-        val hideIntent = Intent(ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {  // open notification channel settings
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                putExtra("app_package", packageName)
-            } else {
-                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-                putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
-            }
-        }
+        val hideIntent = getNotificationSettingsIntent(packageName, applicationInfo.uid)
 
         val appAction =
             NotificationCompat.Action.Builder(0, getString(R.string.service_notification_configure),
@@ -170,11 +164,23 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         // intent actions
         const val ACTION_START = "eu.biqqles.p2oggle.START"  // generic start action
         const val ACTION_STOP = "eu.biqqles.p2oggle.STOP"
-        const val ACTION_CHANNEL_NOTIFICATION_SETTINGS = "android.settings.CHANNEL_NOTIFICATION_SETTINGS"
+        private const val ACTION_CHANNEL_NOTIFICATION_SETTINGS = "android.settings.CHANNEL_NOTIFICATION_SETTINGS"
 
         // notification constants
-        const val NOTIFICATION_CHANNEL_ID = "service"
-        const val NOTIFICATION_ID = 0xF05F8
+        private const val NOTIFICATION_CHANNEL_ID = "service"
+        private const val NOTIFICATION_ID = 0xF05F8
+
+        fun getNotificationSettingsIntent(packageName: String, uid: Int) = Intent().apply {
+            // An intent to open the settings for this service's notification channel.
+            action = ACTION_CHANNEL_NOTIFICATION_SETTINGS
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                putExtra("app_package", packageName)
+                putExtra("app_uid", uid)
+            } else {
+                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
+            }
+        }
 
         fun getStats(manager: ActivityManager): Pair<Long, Long> {
             // Return the duration this service has been running for, in milliseconds, and the memory usage of this

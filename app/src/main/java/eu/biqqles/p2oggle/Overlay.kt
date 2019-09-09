@@ -19,15 +19,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import org.xjy.android.treasure.TreasurePreferences
 
-class Overlay(private val context: Context, switchable: SwitchableAction, private val showText: Boolean) {
+class Overlay(private val context: Context, switchable: SwitchableAction, private val preferences: TreasurePreferences) {
     // An "overlay" which displays a notification on switch toggle above other apps, by inflating a custom layout
     // inside a Toast. This approach negates the need for the SYSTEM_OVERLAY permission but has the same restrictions,
     // namely that it will not display on the lock screen or above other system UI elements like the status bar.
     // Not entirely sure inflating an arbitrary layout in a toast should be allowed, but anyway...
     private inner class SwitchToast(drawable: Drawable?, message: String): Toast(context) {
-        val icon: ImageView by lazy { view.findViewById<ImageView>(R.id.overlayIcon) }
-        val text: TextView by lazy { view.findViewById<TextView>(android.R.id.message) }
+        private val icon: ImageView by lazy { view.findViewById<ImageView>(R.id.overlayIcon) }
+        private val text: TextView by lazy { view.findViewById<TextView>(android.R.id.message) }
+        private val showText = preferences.getBoolean("overlay_text", true)
+        private val systemAccent = preferences.getBoolean("overlay_system_accent", true)
+        private val background = preferences.getString("overlay_bg_colour", "dark")
         private val display: Display
 
         init {
@@ -58,11 +63,19 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
             }
 
             // set colours to match system theme
-            val systemColour = getSystemColour()
-            val systemAccent = getSystemAccentColour()
-            view.background.setColorFilter(systemColour, PorterDuff.Mode.ADD)
-            icon.imageTintList = ColorStateList.valueOf(systemAccent)
-            text.setTextColor(invertColour(systemColour))
+            if (systemAccent) {
+                icon.imageTintList = ColorStateList.valueOf(getSystemAccentColour())
+            }
+
+            val backgroundColour = context.getColor(when(background) {
+                "system" -> getSystemColour()
+                "dark" -> android.R.color.black
+                "light" -> android.R.color.white
+                else -> android.R.color.black
+            })
+
+            view.background.setColorFilter(backgroundColour, PorterDuff.Mode.ADD)
+            text.setTextColor(invertColour(backgroundColour))
 
             super.show()
         }
@@ -84,7 +97,7 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
         toast.show()
     }
 
-    @ColorInt
+    @ColorRes
     private fun getSystemColour(): Int {
         // Return the main system colour (light or dark).
         val colourRes = when(context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
@@ -92,7 +105,7 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
             Configuration.UI_MODE_NIGHT_NO -> android.R.color.white
             else -> android.R.color.black
         }
-        return context.getColor(colourRes)
+        return colourRes
     }
 
     @ColorInt
