@@ -19,7 +19,6 @@
             android:id="@+id/overlayIcon"
             android:src="@drawable/ic_toggle_on"
             android:tint="@color/colorAccent"
-            android:layout_marginEnd="@dimen/overlay_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

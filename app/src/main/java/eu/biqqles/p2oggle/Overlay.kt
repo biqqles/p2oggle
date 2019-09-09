@@ -32,6 +32,10 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
 
             if (showText) {
                 text.text = message
+                // set margin after icon only if text has content
+                with(icon.layoutParams as ViewGroup.MarginLayoutParams) {
+                    marginEnd = context.resources.getDimension(R.dimen.overlay_padding).toInt()
+                }
             }
 
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
