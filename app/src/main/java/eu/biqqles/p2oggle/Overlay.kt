@@ -9,11 +9,16 @@
 package eu.biqqles.p2oggle
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.util.TypedValue
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.ColorInt
 
 class Overlay(private val context: Context, switchable: SwitchableAction, private val showText: Boolean) {
     // An "overlay" which displays a notification on switch toggle above other apps, by inflating a custom layout
@@ -43,6 +48,7 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
         }
 
         override fun show() {
+            // Display this toast adjacent to the physical position of the switch.
             @Suppress("RtlHardcoded")
             when (display.rotation) {
                 Surface.ROTATION_0 -> setGravity(Gravity.TOP or Gravity.LEFT, OFFSET_Y, OFFSET_X)
@@ -50,6 +56,14 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
                 Surface.ROTATION_180 -> setGravity(Gravity.BOTTOM or Gravity.RIGHT, OFFSET_Y, OFFSET_X)
                 Surface.ROTATION_270 -> setGravity(Gravity.TOP or Gravity.RIGHT, OFFSET_X, OFFSET_Y)
             }
+
+            // set colours to match system theme
+            val systemColour = getSystemColour()
+            val systemAccent = getSystemAccentColour()
+            view.background.setColorFilter(systemColour, PorterDuff.Mode.ADD)
+            icon.imageTintList = ColorStateList.valueOf(systemAccent)
+            text.setTextColor(invertColour(systemColour))
+
             super.show()
         }
     }
@@ -68,6 +82,30 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
         // Draw the overlay next to the physical location of the switch.
         val toast = if (toggled) toastOn else toastOff
         toast.show()
+    }
+
+    @ColorInt
+    private fun getSystemColour(): Int {
+        // Return the main system colour (light or dark).
+        val colourRes = when(context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> android.R.color.black
+            Configuration.UI_MODE_NIGHT_NO -> android.R.color.white
+            else -> android.R.color.black
+        }
+        return context.getColor(colourRes)
+    }
+
+    @ColorInt
+    private fun getSystemAccentColour(): Int = with(TypedValue()) {
+        // Return the system accent colour.
+        context.theme.resolveAttribute(android.R.attr.colorAccent, this, true)
+        this.data
+    }
+
+    @ColorInt
+    private fun invertColour(@ColorInt colour: Int): Int {
+        // Invert an ARGB colour by inverting all values except alpha.
+        return colour xor 0x00FFFFFF
     }
 
     companion object {
