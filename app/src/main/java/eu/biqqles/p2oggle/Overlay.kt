@@ -9,53 +9,61 @@
 package eu.biqqles.p2oggle
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
+import android.graphics.drawable.Drawable
 import android.view.*
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 
-class Overlay(context: Context, switchable: SwitchableAction, private val showText: Boolean) {
+class Overlay(private val context: Context, switchable: SwitchableAction, private val showText: Boolean) {
     // An "overlay" which displays a notification on switch toggle above other apps, by inflating a custom layout
     // inside a Toast. This approach negates the need for the SYSTEM_OVERLAY permission but has the same restrictions,
     // namely that it will not display on the lock screen or above other system UI elements like the status bar.
     // Not entirely sure inflating an arbitrary layout in a toast should be allowed, but anyway...
-    private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private val display: Display = windowManager.defaultDisplay
-    private val handler = Handler(Looper.getMainLooper())
-    private val toast: Toast = Toast(context)
-    private val icon: ImageView
+    private inner class SwitchToast(drawable: Drawable?, message: String): Toast(context) {
+        val icon: ImageView by lazy { view.findViewById<ImageView>(R.id.overlayIcon) }
+        val text: TextView by lazy { view.findViewById<TextView>(android.R.id.message) }
+        private val display: Display
 
-    private val messageOff = context.getString(switchable.name) + context.getString(R.string.off)
-    private val messageOn = context.getString(switchable.name) + context.getString(R.string.on)
-    private val iconOff = context.getDrawable(switchable.iconOff)
-    private val iconOn = context.getDrawable(switchable.iconOn)
+        init {
+            view = LayoutInflater.from(context).inflate(R.layout.overlay, null)
+            duration = LENGTH_SHORT
+            icon.setImageDrawable(drawable)
+
+            if (showText) {
+                text.text = message
+            }
+
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            display = windowManager.defaultDisplay
+        }
+
+        override fun show() {
+            @Suppress("RtlHardcoded")
+            when (display.rotation) {
+                Surface.ROTATION_0 -> setGravity(Gravity.TOP or Gravity.LEFT, OFFSET_Y, OFFSET_X)
+                Surface.ROTATION_90 -> setGravity(Gravity.BOTTOM or Gravity.LEFT, OFFSET_X, OFFSET_Y)
+                Surface.ROTATION_180 -> setGravity(Gravity.BOTTOM or Gravity.RIGHT, OFFSET_Y, OFFSET_X)
+                Surface.ROTATION_270 -> setGravity(Gravity.TOP or Gravity.RIGHT, OFFSET_X, OFFSET_Y)
+            }
+            super.show()
+        }
+    }
+
+    private val toastOff: SwitchToast  // having two toasts is far more reliable than updating one
+    private val toastOn: SwitchToast
 
     init {
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view  = LayoutInflater.from(context).inflate(R.layout.overlay, null)
-        icon = toast.view.findViewById(R.id.overlayIcon)
+        toastOff = SwitchToast(context.getDrawable(switchable.iconOff),
+            context.getString(switchable.name) + context.getString(R.string.off))
+        toastOn = SwitchToast(context.getDrawable(switchable.iconOn),
+            context.getString(switchable.name) + context.getString(R.string.on))
     }
 
     fun draw(toggled: Boolean) {
-        // Draw the bg_overlay next to the physical location of the switch.
-        handler.run {
-            toast.cancel()
-            @Suppress("RtlHardcoded")  // we are concerned with physical orientation
-            when (display.rotation) {
-                Surface.ROTATION_0 -> toast.setGravity(Gravity.TOP or Gravity.LEFT, OFFSET_Y, OFFSET_X)
-                Surface.ROTATION_90 -> toast.setGravity(Gravity.BOTTOM or Gravity.LEFT, OFFSET_X, OFFSET_Y)
-                Surface.ROTATION_180 -> toast.setGravity(Gravity.BOTTOM or Gravity.RIGHT, OFFSET_Y, OFFSET_X)
-                Surface.ROTATION_270 -> toast.setGravity(Gravity.TOP or Gravity.RIGHT, OFFSET_X, OFFSET_Y)
-            }
-
-            icon.setImageDrawable(if (toggled) iconOn else iconOff)
-            if (showText) {
-                toast.setText(if (toggled) messageOn else messageOff)
-            }
-
-            toast.show()
-        }
+        // Draw the overlay next to the physical location of the switch.
+        val toast = if (toggled) toastOn else toastOff
+        toast.show()
     }
 
     companion object {

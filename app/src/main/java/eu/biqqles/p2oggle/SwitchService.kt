@@ -48,8 +48,8 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
 
         override fun switched(state: Boolean) {
             if (powerManager.isInteractive) {  // if display on
-                whileScreenOn.switched(state)
                 widget?.draw(state)
+                whileScreenOn.switched(state)
             } else {
                 whileScreenOff.switched(state)
             }
