@@ -87,6 +87,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         if (ready) {
             start(this)
         } else {
+            Device.onSwitch = null
             super.onDestroy()
         }
     }
