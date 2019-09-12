@@ -25,7 +25,7 @@ import org.xjy.android.treasure.TreasurePreferences
 class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var preferences: TreasurePreferences
 
-    private val ready: Boolean
+    private val enabled: Boolean
         get() = preferences.getBoolean("service_enabled", false) && Device.ensureReady()
 
     private inner class OnSwitch : Switchable {
@@ -84,7 +84,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
 
     override fun onDestroy() {
         // Re-create service if killed by system while enabled.
-        if (ready) {
+        if (enabled) {
             start(this)
         } else {
             Device.onSwitch = null
@@ -97,9 +97,9 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         super.onStartCommand(intent, flags, startId)
 
         // abort conditions
-        if (!ready ||
+        if (!enabled ||
             (preferences.getBoolean("start_on_boot", true) && intent?.action == Intent.ACTION_BOOT_COMPLETED)) {
-            super.onDestroy()
+            stopSelf(startId)
             return START_NOT_STICKY
         }
         return START_STICKY
