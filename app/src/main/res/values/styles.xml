@@ -6,11 +6,11 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:scrollbars">none</item>
     </style>
-
 
     <style name="AppTheme.TextAppearance.Detail" parent="@style/TextAppearance.AppCompat.Small">
         <item name="android:textSize">15sp</item>
