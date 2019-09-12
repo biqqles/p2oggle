@@ -102,7 +102,6 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             super.onDestroy()
             return START_NOT_STICKY
         }
-
         return START_STICKY
     }
 
@@ -117,17 +116,17 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             createNotificationChannel()
         }
 
-        val appIntent = Intent(this, MainActivity::class.java)  // open this app
-
-        val hideIntent = getNotificationSettingsIntent(packageName, applicationInfo.uid)
-
-        val appAction =
+        val appAction =  // open this app
             NotificationCompat.Action.Builder(0, getString(R.string.service_notification_configure),
-                PendingIntent.getActivity(this, 0, appIntent, 0)).build()
+                PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), 0)).build()
 
-        val hideAction =
-            NotificationCompat.Action.Builder(0, getString(R.string.service_notification_hide),
-                PendingIntent.getActivity(this, 0, hideIntent, 0)).build()
+        val hideAction =  // open notification channel settings
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationCompat.Action.Builder(0, getString(R.string.service_notification_hide),
+                    PendingIntent.getActivity(this, 0, createNotificationSettingsIntent(packageName), 0)).build()
+            } else {
+                null
+            }
 
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID).apply {
             setSmallIcon(R.drawable.ic_toggle_on)
@@ -135,7 +134,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             setContentText(getString(R.string.service_description))
             setPriority(NotificationCompat.PRIORITY_LOW)
             addAction(appAction)
-            addAction(hideAction)
+            hideAction?.let { addAction(hideAction) }
         }
 
         return builder.build()
@@ -171,16 +170,12 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         private const val NOTIFICATION_CHANNEL_ID = "service"
         private const val NOTIFICATION_ID = 0xF05F8
 
-        fun getNotificationSettingsIntent(packageName: String, uid: Int) = Intent().apply {
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun createNotificationSettingsIntent(packageName: String) = Intent().apply {
             // An intent to open the settings for this service's notification channel.
-            action = ACTION_CHANNEL_NOTIFICATION_SETTINGS
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                putExtra("app_package", packageName)
-                putExtra("app_uid", uid)
-            } else {
-                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-                putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
-            }
+            action = Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS
+            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
         }
 
         fun getStats(manager: ActivityManager): Pair<Long, Long> {

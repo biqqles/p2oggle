@@ -13,6 +13,7 @@
     <string name="service_disabled">Service disabled</string>
 
     <!--Preference strings-->
+    <string name="requires_o">Requires Android O or above</string>
     <string name="pref_category_service">Service</string>
     <string name="pref_title_start_on_boot">Start on boot</string>
     <string name="pref_title_notification">Notification settings</string>
@@ -39,6 +40,7 @@
     <string name="pref_title_action_screen_off">While screen off, toggle</string>
     <string name="pref_title_action_screen_on">While screen on, toggle</string>
 
+    <!--Menu items-->
     <string name="view_repo_title">Visit project repository</string>
     <string name="view_repo_url" translatable="false">"https://github.com/biqqles/p2oggle"</string>
     <string name="pref_title_thread">Visit project thread</string>
