@@ -16,6 +16,7 @@
     <string name="requires_o">Requires Android O or above</string>
     <string name="pref_category_service">Service</string>
     <string name="pref_title_start_on_boot">Start on boot</string>
+    <string name="pref_title_broadcasts">Emit broadcasts for other apps</string>
     <string name="pref_title_notification">Notification settings</string>
     <string name="pref_title_stats">Statistics</string>
     <string name="pref_summary_stats">Memory: %1$s | Uptime: %2$s</string>
@@ -52,6 +53,9 @@
                                 If you are rooted, please give P2oggle root access.</string>
     <string name="evdev_issue">Your device doesn\'t appear to be compatible with P2oggle.
                                Please refer to the project thread for assistance.</string>
+    <string name="broadcasts_info">When enabled, P2oggle will send a broadcast with the intent action\n%1$s\nwhen
+                                   the switch is moved up and\n%2$s\nwhen it is moved down.\n\nYou can use these
+                                   broadcasts to extend P2oggle with apps that can listen for these intents.</string>
     <string name="request_permission">Please enable P2oggle</string>
 
     <!--Action strings-->

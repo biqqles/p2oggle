@@ -53,6 +53,10 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             } else {
                 whileScreenOff.switched(state)
             }
+
+            if (preferences.getBoolean("send_broadcasts", false)) {
+                sendBroadcast(Intent(if (state) ACTION_SWITCH_UP else ACTION_SWITCH_DOWN))
+            }
         }
 
         private fun loadSwitchableFromPreferences(preferencesKey: String): SwitchableAction {
@@ -162,9 +166,10 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
                 .associateBy({it::class.java.simpleName}, {it})
 
         // intent actions
-        const val ACTION_START = "eu.biqqles.p2oggle.START"  // generic start action
-        const val ACTION_STOP = "eu.biqqles.p2oggle.STOP"
-        private const val ACTION_CHANNEL_NOTIFICATION_SETTINGS = "android.settings.CHANNEL_NOTIFICATION_SETTINGS"
+        private const val ACTION_START = "eu.biqqles.p2oggle.START"  // generic service start and stop actions
+        private const val ACTION_STOP = "eu.biqqles.p2oggle.STOP"
+        const val ACTION_SWITCH_DOWN = "eu.biqqles.p2oggle.SWITCH_DOWN"  // external broadcasts
+        const val ACTION_SWITCH_UP = "eu.biqqles.p2oggle.SWITCH_UP"
 
         // notification constants
         private const val NOTIFICATION_CHANNEL_ID = "service"

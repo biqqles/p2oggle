@@ -44,7 +44,6 @@
         <ListPreference
                 android:key="overlay_bg_colour"
                 android:title="@string/pref_title_overlay_bg"
-                android:summary="%s"
                 android:entries="@array/overlay_bg_values"
                 android:entryValues="@array/overlay_bg_indices"
                 android:defaultValue="dark"
@@ -59,15 +58,21 @@
                 android:defaultValue="true"
                 app:iconSpaceReserved="false" />
 
+        <CheckBoxPreference
+                android:key="send_broadcasts"
+                android:title="@string/pref_title_broadcasts"
+                android:defaultValue="false"
+                app:iconSpaceReserved="false" />
+
         <Preference
                 android:key="service_notification"
                 android:title="@string/pref_title_notification"
-                app:iconSpaceReserved="false">
-        </Preference>
+                app:iconSpaceReserved="false" />
 
         <Preference
                 android:key="service_stats"
                 android:title="@string/pref_title_stats"
+                android:selectable="false"
                 app:iconSpaceReserved="false" />
     </PreferenceCategory>
 

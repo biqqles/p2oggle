@@ -41,8 +41,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         addPreferencesFromResource(R.xml.preferences)
 
         // populate action selectors
-        // this would be nicer if done in a class extending ListPreference but unless I defined it in Java rather
-        // than Kotlin I would get ClassNotFoundException when trying to inflate
         val actionScreenOff = findPreference<ListPreference>("action_screen_off")!!
         val actionScreenOn = findPreference<ListPreference>("action_screen_on")!!
 
@@ -62,6 +60,18 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             notificationSettings.setSummary(R.string.requires_o)
         } else {
             notificationSettings.intent = SwitchService.createNotificationSettingsIntent(activity?.packageName!!)
+        }
+
+        // show explanatory dialogue when send broadcasts enabled
+        val sendBroadcasts = findPreference<CheckBoxPreference>("send_broadcasts")!!
+        sendBroadcasts.setOnPreferenceChangeListener { _, checked ->
+            if (checked as Boolean) {
+                with(activity as MainActivity) {
+                    showSimpleDialogue(getString(
+                        R.string.broadcasts_info, SwitchService.ACTION_SWITCH_UP, SwitchService.ACTION_SWITCH_DOWN))
+                }
+            }
+            true
         }
     }
 

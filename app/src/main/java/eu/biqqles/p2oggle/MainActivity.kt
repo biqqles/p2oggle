@@ -105,11 +105,13 @@ class MainActivity : AppCompatActivity() {
         }, timeout)
     }
 
-    private fun showSimpleDialogue(@StringRes message: Int) = with (AlertDialog.Builder(this)) {
+    fun showSimpleDialogue(message: String) = with(AlertDialog.Builder(this)) {
         // Show a simple dialogue with an OK button.
         setPositiveButton(android.R.string.ok) { dialogue, _ -> dialogue.dismiss() }
         setMessage(message)
         create()
         show()
     }
+
+    fun showSimpleDialogue(@StringRes message: Int) = showSimpleDialogue(getString(message))
 }
