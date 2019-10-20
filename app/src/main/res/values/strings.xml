@@ -77,5 +77,6 @@
     <string name="action_data">Mobile data</string>
     <string name="action_play_pause">Play/pause</string>
     <string name="action_silent">Silent</string>
+    <string name="action_vibrate">Vibrate</string>
 
 </resources>

@@ -220,6 +220,16 @@ object Silent : RingerSwitchable {
     override var previousMode = AudioManager.RINGER_MODE_NORMAL
 }
 
+object Vibrate : RingerSwitchable {
+    override val name = R.string.action_vibrate
+    override val iconOff = R.drawable.ic_vibrate_off
+    override val iconOn = R.drawable.ic_vibrate_on
+    override lateinit var audioManager: AudioManager
+    override lateinit var notificationManager: NotificationManager
+    override val toMode = AudioManager.RINGER_MODE_VIBRATE
+    override var previousMode = AudioManager.RINGER_MODE_NORMAL
+}
+
 object DoNotDisturb : DnDSwitchable {
     override val name: Int = R.string.action_dnd
     override val iconOff = R.drawable.ic_do_not_disturb_off
