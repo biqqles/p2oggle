@@ -185,6 +185,17 @@ private interface AudioSwitchable : SwitchableAction {
     }
 }
 
+object Location : SwitchableAction {
+    override val name = R.string.action_location
+    override val iconOff = R.drawable.ic_location_off
+    override val iconOn = R.drawable.ic_location_on
+
+    override fun switched(toggled: Boolean) {
+        val modifier = if (toggled) '+' else '-'
+        Shell.runAsRoot("settings put secure location_providers_allowed ${modifier}gps,${modifier}network")
+    }
+}
+
 private interface DnDSwitchable : AudioSwitchable {
     val toFilter: Int
 

@@ -78,5 +78,6 @@
     <string name="action_play_pause">Play/pause</string>
     <string name="action_silent">Silent</string>
     <string name="action_vibrate">Vibrate</string>
+    <string name="action_location">Location</string>
 
 </resources>
