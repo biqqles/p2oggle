@@ -194,6 +194,32 @@ private interface DnDSwitchable : AudioSwitchable {
     }
 }
 
+private interface RingerSwitchable : AudioSwitchable {
+    val toMode: Int
+    var previousMode: Int
+
+    override fun switched(toggled: Boolean) {
+        if (toggled) {
+            previousMode = audioManager.ringerMode
+            setRingerMode(toMode)
+        } else if (previousMode != toMode) {
+            setRingerMode(previousMode)
+        } else {
+            setRingerMode(AudioManager.RINGER_MODE_NORMAL)
+        }
+    }
+}
+
+object Silent : RingerSwitchable {
+    override val name = R.string.action_silent
+    override val iconOff = R.drawable.ic_silent_off
+    override val iconOn = R.drawable.ic_silent_on
+    override lateinit var audioManager: AudioManager
+    override lateinit var notificationManager: NotificationManager
+    override val toMode = AudioManager.RINGER_MODE_SILENT
+    override var previousMode = AudioManager.RINGER_MODE_NORMAL
+}
+
 object DoNotDisturb : DnDSwitchable {
     override val name: Int = R.string.action_dnd
     override val iconOff = R.drawable.ic_do_not_disturb_off

@@ -76,5 +76,6 @@
     <string name="action_nfc">NFC</string>
     <string name="action_data">Mobile data</string>
     <string name="action_play_pause">Play/pause</string>
+    <string name="action_silent">Silent</string>
 
 </resources>
