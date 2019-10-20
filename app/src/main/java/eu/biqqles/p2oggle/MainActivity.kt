@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         if (!Shell.isRootAvailable) {
             showSimpleDialogue(R.string.request_root)
         } else if (!Device.ensureReady()) {
-            showSimpleDialogue(R.string.evdev_issue)
+            showSimpleDialogue(R.string.supolicy_issue)
         } else {
             return true
         }

@@ -51,11 +51,14 @@
     <!--Dialogue messages-->
     <string name="request_root">This app needs to run as superuser.
                                 If you are rooted, please give P2oggle root access.</string>
-    <string name="evdev_issue">Your device doesn\'t appear to be compatible with P2oggle.
-                               Please refer to the project thread for assistance.</string>
+
+    <string name="supolicy_issue">Your superuser binary doesn\'t support SELinux policy patching, which is required
+                                  by P2oggle. Please use one that does, such as Magisk.</string>
+
     <string name="broadcasts_info">When enabled, P2oggle will send a broadcast with the intent action\n%1$s\nwhen
                                    the switch is moved up and\n%2$s\nwhen it is moved down.\n\nYou can use these
                                    broadcasts to extend P2oggle with apps that can listen for these intents.</string>
+
     <string name="request_permission">Please enable P2oggle</string>
 
     <!--Action strings-->
