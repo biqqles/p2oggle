@@ -46,16 +46,16 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             }
         }
 
-        override fun switched(state: Boolean) {
+        override fun switched(toggled: Boolean) {
             if (powerManager.isInteractive) {  // if display on
-                widget?.draw(state)
-                whileScreenOn.switched(state)
+                widget?.draw(toggled)
+                whileScreenOn.switched(toggled)
             } else {
-                whileScreenOff.switched(state)
+                whileScreenOff.switched(toggled)
             }
 
             if (preferences.getBoolean("send_broadcasts", false)) {
-                sendBroadcast(Intent(if (state) ACTION_SWITCH_UP else ACTION_SWITCH_DOWN))
+                sendBroadcast(Intent(if (toggled) ACTION_SWITCH_UP else ACTION_SWITCH_DOWN))
             }
         }
 
@@ -83,7 +83,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             listOf("action_screen_off", "action_screen_on", "show_overlay", "overlay_text",
                 "overlay_system_accent", "overlay_bg_colour"))
 
-        initialiseCallback()
+        attachCallback()
     }
 
     override fun onDestroy() {
@@ -91,7 +91,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         if (enabled) {
             start(this)
         } else {
-            Device.onSwitch = null
+            detachCallback()
             super.onDestroy()
         }
     }
@@ -109,9 +109,14 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         return START_STICKY
     }
 
-    private fun initialiseCallback() {
-        // Initialise the on-switch callback.
+    private fun attachCallback() {
+        // Initialise the on-switch callback and bind it to the switch.
         Device.onSwitch = OnSwitch()
+    }
+
+    private fun detachCallback() {
+        // Unbind the callback from the switch.
+        Device.onSwitch = null
     }
 
     private fun createNotification(): Notification {
@@ -156,14 +161,15 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         notificationManager.createNotificationChannel(channel)
     }
 
-    override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) = initialiseCallback()
+    override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) = attachCallback()
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
         val switchables =  // all the switchable actions selectable by the user
-            listOf(Nothing, Flashlight, DoNotDisturb, PowerSaver, Aeroplane, WiFi, MobileData, Bluetooth, Nfc)
-                .associateBy({it::class.java.simpleName}, {it})
+            listOf(Nothing, Flashlight, PowerSaver, Aeroplane, WiFi, MobileData, Bluetooth, Nfc,
+                   DoNotDisturb, PlayPause)
+            .associateBy({it::class.java.simpleName}, {it})
 
         // intent actions
         private const val ACTION_START = "eu.biqqles.p2oggle.START"  // generic service start and stop actions

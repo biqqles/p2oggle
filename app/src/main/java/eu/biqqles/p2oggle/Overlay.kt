@@ -27,7 +27,7 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
     // inside a Toast. This approach negates the need for the SYSTEM_OVERLAY permission but has the same restrictions,
     // namely that it will not display on the lock screen or above other system UI elements like the status bar.
     // Not entirely sure inflating an arbitrary layout in a toast should be allowed, but anyway...
-    private inner class SwitchToast(drawable: Drawable?, message: String): Toast(context) {
+    private inner class SwitchToast(alertParameters: Pair<Drawable, String>): Toast(context) {
         private val icon: ImageView by lazy { view.findViewById<ImageView>(R.id.overlayIcon) }
         private val text: TextView by lazy { view.findViewById<TextView>(android.R.id.message) }
         private val showText = preferences.getBoolean("overlay_text", true)
@@ -38,14 +38,13 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
         init {
             view = LayoutInflater.from(context).inflate(R.layout.overlay, null)
             duration = LENGTH_SHORT
-            icon.setImageDrawable(drawable)
 
+            val (drawable, message) = alertParameters
+            icon.setImageDrawable(drawable)
             if (showText) {
                 text.text = message
                 // set margin after icon only if text has content
-                with(icon.layoutParams as ViewGroup.MarginLayoutParams) {
-                    marginEnd = context.resources.getDimension(R.dimen.overlay_padding).toInt()
-                }
+                (icon.layoutParams as ViewGroup.MarginLayoutParams).apply { marginEnd = context.resources.getDimension(R.dimen.overlay_padding).toInt() }
             }
 
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -85,10 +84,8 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
     private val toastOn: SwitchToast
 
     init {
-        toastOff = SwitchToast(context.getDrawable(switchable.iconOff),
-            context.getString(switchable.name) + context.getString(R.string.off))
-        toastOn = SwitchToast(context.getDrawable(switchable.iconOn),
-            context.getString(switchable.name) + context.getString(R.string.on))
+        toastOff = SwitchToast(switchable.getAlertParametersOff(context))
+        toastOn = SwitchToast(switchable.getAlertParametersOn(context))
     }
 
     fun draw(toggled: Boolean) {
@@ -100,12 +97,11 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
     @ColorRes
     private fun getSystemColour(): Int {
         // Return the main system colour (light or dark).
-        val colourRes = when(context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        return when(context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> android.R.color.black
             Configuration.UI_MODE_NIGHT_NO -> android.R.color.white
             else -> android.R.color.black
         }
-        return colourRes
     }
 
     @ColorInt

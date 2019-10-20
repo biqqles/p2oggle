@@ -12,33 +12,45 @@ import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
+import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.provider.Settings
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
-
 interface Switchable {
-    fun switched(state: Boolean)
+    fun switched(toggled: Boolean)
 }
 
 interface SwitchableAction : Switchable {
-    // A user-facing "action" that can be assigned to the switch
+    // A user-facing "action" that can be assigned to the switch.
     @get:StringRes val name: Int
     @get:DrawableRes val iconOff: Int
     @get:DrawableRes val iconOn: Int
-    operator fun invoke(context: Context): SwitchableAction  // pseudo-constructor
+
+    operator fun invoke(context: Context): SwitchableAction = this  // pseudo-constructor
+
+    fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
+        // Return an icon and message to alert the user of this action being toggled off.
+        return Pair(context.getDrawable(iconOff), context.getString(name) + context.getString(R.string.off))
+    }
+
+    fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
+        // Return parameters to alert the user of this action being toggled on.
+        return Pair(context.getDrawable(iconOn), context.getString(name) + context.getString(R.string.on))
+    }
 }
 
 object Nothing : SwitchableAction {
     override val name: Int = R.string.action_nothing
     override val iconOff = R.drawable.ic_toggle_off
     override val iconOn = R.drawable.ic_toggle_on
-    override fun switched(state: Boolean) {}
-    override fun invoke(context: Context): SwitchableAction = this
+    override fun switched(toggled: Boolean) {}
 }
 
 object Flashlight : SwitchableAction {
@@ -48,9 +60,9 @@ object Flashlight : SwitchableAction {
     private lateinit var manager: CameraManager
     private lateinit var rearCamera: String
 
-    override fun switched(state: Boolean) {
+    override fun switched(toggled: Boolean) {
         try {
-            manager.setTorchMode(rearCamera, state)
+            manager.setTorchMode(rearCamera, toggled)
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
@@ -63,45 +75,14 @@ object Flashlight : SwitchableAction {
     }
 }
 
-object DoNotDisturb : SwitchableAction {
-    override val name: Int = R.string.action_dnd
-    override val iconOff = R.drawable.ic_do_not_disturb_off
-    override val iconOn = R.drawable.ic_do_not_disturb_on
-    private lateinit var manager: NotificationManager
-
-    override fun switched(state: Boolean) {
-        val filter = if (state) NotificationManager.INTERRUPTION_FILTER_NONE
-        else       NotificationManager.INTERRUPTION_FILTER_ALL
-        manager.setInterruptionFilter(filter)
-    }
-
-    override operator fun invoke(context: Context): SwitchableAction {
-        manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        requestPolicyAccess(context)
-        return this
-    }
-
-    private fun requestPolicyAccess(context: Context) {
-        if (!manager.isNotificationPolicyAccessGranted) {
-            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-            context.startActivity(intent)
-            Toast.makeText(context, R.string.request_permission, Toast.LENGTH_LONG).show()
-        }
-    }
-}
-
 object PowerSaver : SwitchableAction {
     override val name = R.string.action_power_saver
     override val iconOff = R.drawable.ic_toggle_off
     override val iconOn = R.drawable.ic_toggle_on
 
-    override fun switched(state: Boolean) {
-        Shell.runAsRoot("settings put global low_power ${if (state) 1 else 0}")
+    override fun switched(toggled: Boolean) {
+        Shell.runAsRoot("settings put global low_power ${if (toggled) 1 else 0}")
     }
-
-    override operator fun invoke(context: Context): SwitchableAction = this
 }
 
 object Aeroplane : SwitchableAction {
@@ -109,12 +90,10 @@ object Aeroplane : SwitchableAction {
     override val iconOff = R.drawable.ic_airplanemode_off
     override val iconOn = R.drawable.ic_airplanemode_on
     
-    override fun switched(state: Boolean) {
-        Shell.runAsRoot("settings put global airplane_mode_on ${if (state) 1 else 0}")
-        Shell.runAsRoot("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state $state")
+    override fun switched(toggled: Boolean) {
+        Shell.runAsRoot("settings put global airplane_mode_on ${if (toggled) 1 else 0}")
+        Shell.runAsRoot("am broadcast -a android.intent.action.AIRPLANE_MODE --ez toggled $toggled")
     }
-
-    override fun invoke(context: Context): SwitchableAction = this
 }
 
 object WiFi : SwitchableAction {
@@ -123,8 +102,8 @@ object WiFi : SwitchableAction {
     override val iconOn = R.drawable.ic_signal_wifi_on
     private lateinit var manager: WifiManager
 
-    override fun switched(state: Boolean) {
-        manager.isWifiEnabled = state
+    override fun switched(toggled: Boolean) {
+        manager.isWifiEnabled = toggled
     }
 
     override operator fun invoke(context: Context): SwitchableAction {
@@ -138,11 +117,9 @@ object MobileData : SwitchableAction {
     override val iconOff = R.drawable.ic_signal_cellular_off
     override val iconOn = R.drawable.ic_signal_cellular_on
 
-    override fun switched(state: Boolean) {
-        Shell.runAsRoot("svc data ${if (state) "enable" else "disable"}")
+    override fun switched(toggled: Boolean) {
+        Shell.runAsRoot("svc data ${if (toggled) "enable" else "disable"}")
     }
-
-    override operator fun invoke(context: Context): SwitchableAction = this
 }
 
 object Bluetooth : SwitchableAction {
@@ -151,8 +128,8 @@ object Bluetooth : SwitchableAction {
     override val iconOn = R.drawable.ic_bluetooth_on
     private lateinit var adapter: BluetoothAdapter
 
-    override fun switched(state: Boolean) {
-        if (state) adapter.enable() else adapter.disable()
+    override fun switched(toggled: Boolean) {
+        if (toggled) adapter.enable() else adapter.disable()
     }
 
     override operator fun invoke(context: Context): SwitchableAction {
@@ -166,9 +143,84 @@ object Nfc : SwitchableAction {
     override val iconOff = R.drawable.ic_nfc
     override val iconOn = R.drawable.ic_nfc
 
-    override fun switched(state: Boolean) {
-        Shell.runAsRoot("svc nfc ${if (state) "enable" else "disable"}")
+    override fun switched(toggled: Boolean) {
+        Shell.runAsRoot("svc nfc ${if (toggled) "enable" else "disable"}")
+    }
+}
+
+private interface AudioSwitchable : SwitchableAction {
+    var audioManager: AudioManager
+    var notificationManager: NotificationManager
+
+    override operator fun invoke(context: Context): SwitchableAction {
+        audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        requestNotificationPolicyAccess(context)
+        return this
     }
 
-    override operator fun invoke(context: Context) = this
+    fun setRingerMode(ringerMode: Int) {
+        // Set the ringer mode, working around a bug in Android whereby setting RINGER_MODE_SILENT doesn't work and
+        // instead enables Do not disturb.
+        audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+        audioManager.ringerMode = ringerMode
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+    }
+
+    fun sendMediaKeyEvent(keyCode: Int) {
+        // Send a media key event.
+        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+    }
+
+    fun requestNotificationPolicyAccess(context: Context) {
+        // If notification policy access is not granted, request it.
+        if (!notificationManager.isNotificationPolicyAccessGranted) {
+            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+            context.startActivity(intent)
+            Toast.makeText(context, R.string.request_permission, Toast.LENGTH_LONG).show()
+        }
+    }
+}
+
+private interface DnDSwitchable : AudioSwitchable {
+    val toFilter: Int
+
+    override fun switched(toggled: Boolean) {
+        val filter = if (toggled) toFilter else NotificationManager.INTERRUPTION_FILTER_ALL
+        notificationManager.setInterruptionFilter(filter)
+    }
+}
+
+object DoNotDisturb : DnDSwitchable {
+    override val name: Int = R.string.action_dnd
+    override val iconOff = R.drawable.ic_do_not_disturb_off
+    override val iconOn = R.drawable.ic_do_not_disturb_on
+    override lateinit var audioManager: AudioManager
+    override lateinit var notificationManager: NotificationManager
+    override val toFilter = NotificationManager.INTERRUPTION_FILTER_NONE
+}
+
+object PlayPause : AudioSwitchable {
+    override val name = R.string.action_play_pause
+    override val iconOff = R.drawable.ic_pause
+    override val iconOn = R.drawable.ic_play
+    override lateinit var audioManager: AudioManager
+    override lateinit var notificationManager: NotificationManager
+    private const val nameOff = R.string.pause
+    private const val nameOn = R.string.play
+
+    override fun switched(toggled: Boolean) {
+        sendMediaKeyEvent(if (toggled) KeyEvent.KEYCODE_MEDIA_PLAY else KeyEvent.KEYCODE_MEDIA_PAUSE)
+    }
+
+    override fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
+        return Pair(context.getDrawable(iconOff), context.getString(nameOff))
+    }
+
+    override fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
+        return Pair(context.getDrawable(iconOn), context.getString(nameOn))
+    }
 }

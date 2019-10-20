@@ -64,6 +64,8 @@
     <!--Action strings-->
     <string name="off">" off"</string>
     <string name="on">" on"</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
     <string name="action_nothing">Nothing</string>
     <string name="action_flashlight">Flashlight</string>
     <string name="action_dnd">Silent mode</string>
@@ -73,5 +75,6 @@
     <string name="action_bluetooth">Bluetooth</string>
     <string name="action_nfc">NFC</string>
     <string name="action_data">Mobile data</string>
+    <string name="action_play_pause">Play/pause</string>
 
 </resources>
