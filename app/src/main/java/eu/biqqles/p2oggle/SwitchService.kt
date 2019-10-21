@@ -168,7 +168,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
     companion object {
         val switchables =  // all the switchable actions selectable by the user
             listOf(Nothing, Flashlight, PowerSaver, Aeroplane, WiFi, MobileData, Bluetooth, Nfc, Location,
-                   Silent, Vibrate, AlarmsOnly, TotalSilence, PlayPause)
+                   Silent, Vibrate, PriorityOnly, AlarmsOnly, TotalSilence, PlayPause)
             .associateBy({it::class.java.simpleName}, {it})
 
         // intent actions

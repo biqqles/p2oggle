@@ -80,5 +80,6 @@
     <string name="action_vibrate">Vibrate</string>
     <string name="action_location">Location</string>
     <string name="action_alarms_only">Alarms only</string>
+    <string name="action_priority_only">Priority only</string>
 
 </resources>
