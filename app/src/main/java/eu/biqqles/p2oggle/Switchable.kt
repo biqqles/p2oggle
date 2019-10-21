@@ -148,7 +148,18 @@ object Nfc : SwitchableAction {
     }
 }
 
-private interface AudioSwitchable : SwitchableAction {
+object Location : SwitchableAction {
+    override val name = R.string.action_location
+    override val iconOff = R.drawable.ic_location_off
+    override val iconOn = R.drawable.ic_location_on
+
+    override fun switched(toggled: Boolean) {
+        val modifier = if (toggled) '+' else '-'
+        Shell.runAsRoot("settings put secure location_providers_allowed ${modifier}gps,${modifier}network")
+    }
+}
+
+private interface AudioAction : SwitchableAction {
     var audioManager: AudioManager
     var notificationManager: NotificationManager
 
@@ -185,18 +196,7 @@ private interface AudioSwitchable : SwitchableAction {
     }
 }
 
-object Location : SwitchableAction {
-    override val name = R.string.action_location
-    override val iconOff = R.drawable.ic_location_off
-    override val iconOn = R.drawable.ic_location_on
-
-    override fun switched(toggled: Boolean) {
-        val modifier = if (toggled) '+' else '-'
-        Shell.runAsRoot("settings put secure location_providers_allowed ${modifier}gps,${modifier}network")
-    }
-}
-
-private interface DnDSwitchable : AudioSwitchable {
+private interface DnDAction : AudioAction {
     val toFilter: Int
 
     override fun switched(toggled: Boolean) {
@@ -205,7 +205,7 @@ private interface DnDSwitchable : AudioSwitchable {
     }
 }
 
-private interface RingerSwitchable : AudioSwitchable {
+private interface RingerAction : AudioAction {
     val toMode: Int
     var previousMode: Int
 
@@ -221,7 +221,7 @@ private interface RingerSwitchable : AudioSwitchable {
     }
 }
 
-object Silent : RingerSwitchable {
+object Silent : RingerAction {
     override val name = R.string.action_silent
     override val iconOff = R.drawable.ic_silent_off
     override val iconOn = R.drawable.ic_silent_on
@@ -231,7 +231,7 @@ object Silent : RingerSwitchable {
     override var previousMode = AudioManager.RINGER_MODE_NORMAL
 }
 
-object Vibrate : RingerSwitchable {
+object Vibrate : RingerAction {
     override val name = R.string.action_vibrate
     override val iconOff = R.drawable.ic_vibrate_off
     override val iconOn = R.drawable.ic_vibrate_on
@@ -241,8 +241,8 @@ object Vibrate : RingerSwitchable {
     override var previousMode = AudioManager.RINGER_MODE_NORMAL
 }
 
-object DoNotDisturb : DnDSwitchable {
-    override val name: Int = R.string.action_dnd
+object TotalSilence : DnDAction {
+    override val name: Int = R.string.action_total_silence
     override val iconOff = R.drawable.ic_do_not_disturb_off
     override val iconOn = R.drawable.ic_do_not_disturb_on
     override lateinit var audioManager: AudioManager
@@ -250,7 +250,7 @@ object DoNotDisturb : DnDSwitchable {
     override val toFilter = NotificationManager.INTERRUPTION_FILTER_NONE
 }
 
-object PlayPause : AudioSwitchable {
+object PlayPause : AudioAction {
     override val name = R.string.action_play_pause
     override val iconOff = R.drawable.ic_pause
     override val iconOn = R.drawable.ic_play

@@ -68,7 +68,7 @@
     <string name="pause">Pause</string>
     <string name="action_nothing">Nothing</string>
     <string name="action_flashlight">Flashlight</string>
-    <string name="action_dnd">Silent mode</string>
+    <string name="action_total_silence">Total silence</string>
     <string name="action_wifi">Wi-Fi</string>
     <string name="action_aeroplane">Aeroplane mode</string>
     <string name="action_power_saver">Battery saver</string>
