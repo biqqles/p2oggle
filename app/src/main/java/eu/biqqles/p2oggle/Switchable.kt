@@ -241,6 +241,15 @@ object Vibrate : RingerAction {
     override var previousMode = AudioManager.RINGER_MODE_NORMAL
 }
 
+object AlarmsOnly : DnDAction {
+    override val name: Int = R.string.action_alarms_only
+    override val iconOff = R.drawable.ic_do_not_disturb_off
+    override val iconOn = R.drawable.ic_do_not_disturb_on
+    override lateinit var audioManager: AudioManager
+    override lateinit var notificationManager: NotificationManager
+    override val toFilter = NotificationManager.INTERRUPTION_FILTER_ALARMS
+}
+
 object TotalSilence : DnDAction {
     override val name: Int = R.string.action_total_silence
     override val iconOff = R.drawable.ic_do_not_disturb_off
