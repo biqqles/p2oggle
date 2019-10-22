@@ -46,7 +46,7 @@
     <string name="view_repo_url" translatable="false">"https://github.com/biqqles/p2oggle"</string>
     <string name="pref_title_thread">Visit project thread</string>
     <string name="pref_thread_url"
-            translatable="false">"https://forum.xda-developers.com/devdb/project/?id=34190"</string>
+            translatable="false">"https://forum.xda-developers.com/lenovo-p2/themes/p2oggle-t3965418"</string>
 
     <!--Dialogue messages-->
     <string name="request_root">This app needs to run as superuser.
