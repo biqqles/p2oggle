@@ -37,12 +37,12 @@ interface SwitchableAction : Switchable {
 
     fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
         // Return an icon and message to alert the user of this action being toggled off.
-        return Pair(context.getDrawable(iconOff), context.getString(name) + context.getString(R.string.off))
+        return Pair(context.getDrawable(iconOff)!!, context.getString(name) + context.getString(R.string.off))
     }
 
     fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
         // Return parameters to alert the user of this action being toggled on.
-        return Pair(context.getDrawable(iconOn), context.getString(name) + context.getString(R.string.on))
+        return Pair(context.getDrawable(iconOn)!!, context.getString(name) + context.getString(R.string.on))
     }
 }
 
@@ -282,10 +282,10 @@ object PlayPause : AudioAction {
     }
 
     override fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
-        return Pair(context.getDrawable(iconOff), context.getString(nameOff))
+        return Pair(context.getDrawable(iconOff)!!, context.getString(nameOff))
     }
 
     override fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
-        return Pair(context.getDrawable(iconOn), context.getString(nameOn))
+        return Pair(context.getDrawable(iconOn)!!, context.getString(nameOn))
     }
 }

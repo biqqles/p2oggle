@@ -2,11 +2,11 @@ apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "eu.biqqles.p2oggle"
         minSdkVersion 25  // last stock release for kuntao (7.1.1)
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 02
         versionName "0.2"
         resValue "string", "org_xjy_android_treasure_authority", "${applicationId}.preferences"
