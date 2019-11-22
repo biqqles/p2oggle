@@ -21,7 +21,7 @@ object Device {
     // Use inotify to watch the device's event file for input events. When one is detected, trigger a callback
     // (onSwitch) if it is from the switch.
     private val eventStream: DataInputStream?
-    private val inotify = object : FileObserver(File(DEVICE_FILE)) {
+    private val inotify = object : FileObserver(DEVICE_FILE) {
         override fun onEvent(event: Int, path: String?) = processLastEvent()
     }
 
