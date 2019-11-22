@@ -6,9 +6,10 @@ android {
     defaultConfig {
         applicationId "eu.biqqles.p2oggle"
         minSdkVersion 25  // last stock release for kuntao (7.1.1)
+        //noinspection OldTargetApi
         targetSdkVersion 28
-        versionCode 02
-        versionName "0.2"
+        versionCode 03
+        versionName "0.3"
         resValue "string", "org_xjy_android_treasure_authority", "${applicationId}.preferences"
     }
     
