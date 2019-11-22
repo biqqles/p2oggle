@@ -14,28 +14,38 @@ object Shell {
     // Utility functions for working with shell commands.
     private val suProcess: Process by lazy {
         // Using a persistent superuser process means we don't ping toasts every time we need to issue a command.
-        assert(isRootAvailable)
-        Runtime.getRuntime().exec("su")
+        run("su")
     }
 
     val isRootAvailable: Boolean
-        // Test the execution of no-op as root. Use this sparingly for the reason outlined above.
-        get() = run("su -c :")
-
-    fun run(command: String): Boolean {
-        // Execute the given shell command *synchronously*, returning whether successful.
-        return try {
-            Runtime.getRuntime().exec(command).waitFor() == 0
-        } catch (e: Exception) {
+        // Check whether suProcess has exited. If it has, assume su is not available.
+        get() = try {
+            suProcess.exitValue()
             false
+        } catch (e: IllegalThreadStateException) {
+            true
         }
+
+    fun run(command: String): Process {
+        // Execute the given shell command *asynchronously* in a new process, which is returned.
+        return Runtime.getRuntime().exec(command)
     }
 
-    fun runAsRoot(command: String) {
-        // Execute the given shell command *asynchronously* and as root.
-        // In cases where determining if the command executed successfully is critical, use `run` with `su -c`.
+    fun runAsRoot(command: String): Boolean {
+        // Execute the given shell command *synchronously* and as root, returning whether successful.
+        // Because we need to run everything in a persistent su process (each su call creates a toast), we can't use
+        // waitFor(). Instead, emit an indicator if the command successfully completes, and block until it arrives.
         val input = DataOutputStream(suProcess.outputStream)
-        input.writeBytes(command + '\n')
+        val output = suProcess.inputStream
+        val error = suProcess.errorStream
+
+        input.writeBytes("$command && echo -n $completionIndicator \n")
         input.flush()
+
+        if (error.available() > 0) return false
+        while (output.read() != completionIndicator.toInt()) continue
+        return true
     }
+
+    private const val completionIndicator = 'U'  // a char that marks the successful completion of a command
 }
