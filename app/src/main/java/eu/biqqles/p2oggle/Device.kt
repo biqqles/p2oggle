@@ -14,25 +14,28 @@ import java.io.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-private const val DEVICE_FILE = "/dev/input/event4"
-
 object Device {
     // Interface with kuntao's hardware switch using evdev.
     // Use inotify to watch the device's event file for input events. When one is detected, trigger a callback
     // (onSwitch) if it is from the switch.
-    private val eventStream: DataInputStream?
-    private val inotify = object : FileObserver(DEVICE_FILE) {
-        override fun onEvent(event: Int, path: String?) = processLastEvent()
-    }
+    private val eventStream: DataInputStream
+    private val inotify: FileObserver
 
     var onSwitch: Switchable? = null
 
     init {
         ensureReady()
+
+        var file = DEVICE_FILE
         eventStream = try {
-            DataInputStream(BufferedInputStream(FileInputStream(DEVICE_FILE)))
+            DataInputStream(BufferedInputStream(FileInputStream(file)))
         } catch (e: IOException) {
-            null
+            file = initialiseQShim()
+            DataInputStream(BufferedInputStream(FileInputStream(file)))
+        }
+
+        inotify = object : FileObserver(file) {
+            override fun onEvent(event: Int, path: String?) = processLastEvent()
         }
         inotify.startWatching()
     }
@@ -46,17 +49,17 @@ object Device {
         //       - We could move to priv-app to limit access further but this comes
         //          at the cost of user-hostility, making uninstallation difficult
         // Return true if successful, false if not.
-        val chmod = "su -c chmod a+r $DEVICE_FILE"
-        val supolicy = "su -c supolicy --live " +
+        val chmod = "chmod a+r $DEVICE_FILE"
+        val supolicy = "supolicy --live " +
                 "'allow appdomain input_device dir search' " +                   // directory rule
                 "'allow appdomain input_device chr_file { getattr read open }'"  // character device rule
 
-        // check if character file readable
+        // check if character file visible (though not necessarily readable)
         if (File(DEVICE_FILE).exists()) {
             return true
         }
         // if it's not, try to apply changes
-        return Shell.run(chmod) && Shell.run(supolicy)
+        return Shell.runAsRoot(chmod) && Shell.runAsRoot(supolicy)
     }
 
     private fun processLastEvent() {
@@ -83,7 +86,27 @@ object Device {
         eventStream?.skip(Long.MAX_VALUE)  // skip to end (ignore EV_SYN)
         return InputEvent(buffer)
     }
+
+    private fun initialiseQShim(): String {
+        // On Android Q and above, access to the filesystem from the JVM is restricted. To work around this, watch the
+        // device file with inotifyd and mirror writes to a file we _can_ access. Return this file's path.
+        val file = File(SHIM_DEVICE)
+        val scriptPath = File(file.parentFile, "shim.sh")
+
+        val copyStruct = "su -c head -n ${InputEvent.SIZE} $DEVICE_FILE >> $SHIM_DEVICE"
+        Shell.runAsRoot("echo '$copyStruct' > $scriptPath && chmod a+x $scriptPath")
+
+        Shell.runAsRoot(": > $SHIM_DEVICE")  // clear or create file
+        Shell.run("su -c inotifyd $scriptPath $DEVICE_FILE")  // start inotifyd in a new process
+
+        return file.absolutePath
+    }
 }
+
+// Paths
+private const val DEVICE_FILE = "/dev/input/event4"
+@Suppress("SdCardPath")  // need to get this statically
+private const val SHIM_DEVICE = "/data/data/${BuildConfig.APPLICATION_ID}/cache/shim"
 
 // Definitions from input.h and input-event-codes.h
 private const val EV_SW: Short = 0x05
