@@ -17,8 +17,11 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.net.wifi.WifiManager
+import android.os.Handler
+import android.os.PowerManager
 import android.provider.Settings
 import android.view.KeyEvent
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -57,20 +60,20 @@ object Flashlight : SwitchableAction {
     override val name: Int = R.string.action_flashlight
     override val iconOff = R.drawable.ic_flash_off
     override val iconOn = R.drawable.ic_flash_on
-    private lateinit var manager: CameraManager
+    private lateinit var cameraManager: CameraManager
     private lateinit var rearCamera: String
 
     override fun switched(toggled: Boolean) {
         try {
-            manager.setTorchMode(rearCamera, toggled)
+            cameraManager.setTorchMode(rearCamera, toggled)
         } catch (e: CameraAccessException) {
             e.printStackTrace()
         }
     }
 
     override operator fun invoke(context: Context): SwitchableAction {
-        manager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        rearCamera = manager.cameraIdList.first()
+        cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        rearCamera = cameraManager.cameraIdList.first()
         return this
     }
 }
@@ -288,4 +291,44 @@ object PlayPause : AudioAction {
     override fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
         return Pair(context.getDrawable(iconOn), context.getString(nameOn))
     }
+}
+
+object Caffeine : SwitchableAction {
+    // An action that keeps the screen awake using an invisible toast which periodically resets the screen off timeout
+    // counter. This method is preferable to, for example, setting the screen timeout value as it has no side effects
+    // and requires no permissions.
+    override val name = R.string.action_caffeine
+    override val iconOff = R.drawable.ic_caffeine
+    override val iconOn = R.drawable.ic_caffeine
+    private lateinit var powerManager: PowerManager
+    private lateinit var invisibleToast: Toast
+    private lateinit var handler: Handler
+    private val toastSpammer = object : Runnable {
+        override fun run() {
+            invisibleToast.show()
+            if (powerManager.isInteractive) {  // disable when screen turned off
+                handler.postDelayed(this, SHORT_DELAY)
+            }
+        }
+    }
+
+    override fun switched(toggled: Boolean) {
+        if (toggled) {
+            handler.postDelayed(toastSpammer, SHORT_DELAY)  // leave time for overlay to show
+        } else {
+            handler.removeCallbacks(toastSpammer)
+        }
+    }
+
+    override fun invoke(context: Context): SwitchableAction {
+        powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        invisibleToast = Toast(context).apply {
+            view = View(context)  // empty view
+            duration = Toast.LENGTH_SHORT
+        }
+        handler = Handler()
+        return this
+    }
+
+    private const val SHORT_DELAY: Long = 2000  // from NotificationManagerService
 }
