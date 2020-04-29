@@ -9,6 +9,7 @@
 package eu.biqqles.p2oggle
 
 import java.io.DataOutputStream
+import java.io.IOException
 
 object Shell {
     // Utility functions for working with shell commands.
@@ -21,6 +22,8 @@ object Shell {
         // Check whether suProcess has exited. If it has, assume su is not available.
         get() = try {
             suProcess.exitValue()
+            false
+        } catch (e: IOException) {
             false
         } catch (e: IllegalThreadStateException) {
             true
