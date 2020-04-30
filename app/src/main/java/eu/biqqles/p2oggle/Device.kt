@@ -20,6 +20,7 @@ object Device {
     // (onSwitch) if it is from the switch.
     private val eventStream: DataInputStream
     private val inotify: FileObserver
+    private val logTag = this::class.java.simpleName
 
     var onSwitch: Switchable? = null
 
@@ -38,6 +39,7 @@ object Device {
             override fun onEvent(event: Int, path: String?) = processLastEvent()
         }
         inotify.startWatching()
+        Log.i(logTag, "Watching device $file for events")
     }
 
     fun ensureReady(): Boolean {
@@ -56,9 +58,11 @@ object Device {
 
         // check if character file visible (though not necessarily readable)
         if (File(DEVICE_FILE).exists()) {
+            Log.i(logTag, "$DEVICE_FILE: visible")
             return true
         }
         // if it's not, try to apply changes
+        Log.i(logTag, "Applying chmod and supolicy")
         return Shell.runAsRoot(chmod) && Shell.runAsRoot(supolicy)
     }
 
@@ -66,7 +70,7 @@ object Device {
         // Look at the last event and run callback if it is from the switch.
         val event = getLastEvent()
         if (event.type == EV_SW && event.code == SW_ONEKEY_LOW_POWER) {
-            Log.i(this::class.java.simpleName, "Switch event: value ${event.value}")
+            Log.d(logTag, "Switch event: value ${event.value}")
             onSwitch?.switched(event.value == 1)
         }
     }
@@ -76,14 +80,10 @@ object Device {
         val buffer = ByteBuffer.allocate(InputEvent.SIZE)
             buffer.order(ByteOrder.nativeOrder())
 
-        try {
-            if (eventStream?.read(buffer.array()) != buffer.capacity()) throw IOException()
-        } catch (e: IOException) {
-            e.printStackTrace()  // shouldn't ever happen
-            ensureReady()  // but maybe you forgot to initialise?
-        }
-
-        eventStream?.skip(Long.MAX_VALUE)  // skip to end (ignore EV_SYN)
+        val read = try {eventStream.read(buffer.array())} catch (e: IOException) {0}
+        // skip to end (ignore EV_SYN)
+        val skipped = try {eventStream.skip(Long.MAX_VALUE)} catch (e: IOException) {0}
+        Log.i(logTag, "Input event: read $read, skipped $skipped")
         return InputEvent(buffer)
     }
 
@@ -92,6 +92,7 @@ object Device {
         // device file with inotifyd and mirror writes to a file we _can_ access. Return this file's path.
         val file = File(SHIM_DEVICE)
         val scriptPath = File(file.parentFile, "shim.sh")
+        Log.i(logTag, "Initialising shim with device ${file.absolutePath} and script ${scriptPath.absolutePath}")
 
         val copyStruct = "su -c head -n ${InputEvent.SIZE} $DEVICE_FILE >> $SHIM_DEVICE"
         Shell.runAsRoot("echo '$copyStruct' > $scriptPath && chmod a+x $scriptPath")
