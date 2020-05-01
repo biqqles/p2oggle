@@ -1,11 +1,10 @@
 # P2oggle
 [Jump to source](app/src/main/java/eu/biqqles/p2oggle/) | [Project thread](https://forum.xda-developers.com/devdb/project/?id=34190) | [Screenshots](https://forum.xda-developers.com/devdb/project/?id=34190#screenshots)
 
-The [Lenovo P2](https://en.wikipedia.org/wiki/Lenovo_P2) features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (read: "*P-Toggle*") is an app which enables this switch and allows you to assign toggleable "actions" to it. Currently, these include:
-
+The [Lenovo P2](https://en.wikipedia.org/wiki/Lenovo_P2) features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (pronounced "*P-Toggle*") is an app which enables this switch and allows you to assign toggleable "actions" to it.
 
 <details>
-  <summary>Available actions</summary>
+  <summary>Currently, available actions include:</summary>
 
   - Flashlight
   - Battery saver
@@ -22,6 +21,7 @@ The [Lenovo P2](https://en.wikipedia.org/wiki/Lenovo_P2) features a somewhat unu
   - Total silence
   - Play/pause
   - Caffeine
+
 </details>
 
 Actions can be configured separately for when the screen is on or off. If you have suggestions for actions you think would be useful, please make them in the project thread and I will be happy to add them.
@@ -41,6 +41,13 @@ If you are on stock you will probably want to disable the power saver mode from 
 P2oggle is released under the Mozilla General Public License version 2.0.
 
 ### Changelog
+#### 0.4
+Changes in this release:
+
+- New action: *Caffeine*
+- Fixed a crash on unrooted devices
+- Renamed *System* background colour to *Automatic* to avoid confusion on P
+
 #### 0.3
 Changes in this release:
 
