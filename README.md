@@ -3,11 +3,30 @@
 
 The [Lenovo P2](https://en.wikipedia.org/wiki/Lenovo_P2) features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (read: "*P-Toggle*") is an app which enables this switch and allows you to assign toggleable "actions" to it. Currently, these include:
 
-|Flashlight  |Battery saver|Aeroplane mode|Wi-Fi          |Mobile data      |Bluetooth        |NFC           |
-|:----------:|:-----------:|:------------:|:-------------:|:---------------:|:---------------:|:------------:|
-|**Location**|**Silent**   |**Vibrate**   |**Alarms only**|**Priority only**|**Total silence**|**Play/pause**|
+
+<details>
+  <summary>Available actions</summary>
+
+  - Flashlight
+  - Battery saver
+  - Aeroplane mode
+  - Wi-Fi
+  - Mobile data
+  - Bluetooth
+  - NFC
+  - Location
+  - Silent
+  - Vibrate
+  - Alarms only
+  - Priority only
+  - Total silence
+  - Play/pause
+  - Caffeine
+</details>
 
 Actions can be configured separately for when the screen is on or off. If you have suggestions for actions you think would be useful, please make them in the project thread and I will be happy to add them.
+
+Additionally you can configure P2oggle to broadcast switch events for other apps.
 
 ### Requirements
 
