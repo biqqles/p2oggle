@@ -1,0 +1,73 @@
+The [url="https://en.wikipedia.org/wiki/Lenovo_P2"]Lenovo P2[/url] features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (pronounced "[i]P-Toggle[/i]") is an app which enables this switch and allows you to assign toggleable [i]actions[/i] to it.
+
+[center][size="5"][u][url="https://github.com/biqqles/p2oggle/releases/download/v0.4/p2oggle-0.4.apk"]DOWNLOAD[size="3"](v0.4)[/size][/url][/u][/size][/center]
+
+[b]Currently, available actions include:[/b]
+[list]
+[*] Flashlight
+[*] Silent mode
+[*] Battery saver
+[*] Aeroplane mode
+[*] Wi-Fi
+[*] Mobile data
+[*] Bluetooth
+[*] NFC
+[*] Location
+[*] Silent
+[*] Vibrate
+[*] Priority only
+[*] Alarms only
+[*] Total silence
+[*] Play/pause
+[*] Caffeine
+[/list]
+Actions can be configured separately for when the screen is on or off. If you have suggestions for any you think would be useful, please make them below and I will be happy to add them.
+
+Additionally you can configure P2oggle to broadcast switch events for other apps.
+
+[size="4"][b]Requirements[/b][/size]
+Since the Android input stack [url=https://source.android.com/devices/input#understanding-hid-usages-and-event-codes]more or less ignores[/url] the existence of hardware switches, P2oggle uses the kernel's input event interface (evdev) directly. It therefore [b]requires a rooted device[/b]. You will need a superuser binary that includes supolicy and BusyBox, e.g. Magisk.
+
+The service that listens for switch input consumes minimal resources: in my testing battery usage has never risen above 0% with memory consumption averaging about 25 MB, depending on the actions selected.
+
+P2oggle is compatible with the stock ROM and should work with all custom ROMs and kernels. I wrote it for the [font="monospace"]P2a42[/font] (global variant) but it should also be fully compatible with the [font="monospace"]P2c72[/font] (domestic variant). If it works for you please let me know.
+
+If you are on stock you will probably want to disable the power saver mode from being bound to the switch in order to use P2oggle properly. You can do that by running [font="monospace"]su -c pm hide com.lenovo.powersetting[/font] in a terminal emulator or adb shell. Replace [font="monospace"]hide[/font] with [font="monospace"]unhide[/font] to reverse.
+
+P2oggle is released under the Mozilla General Public License version 2.0. As always, please post any feedback/suggestions/bug reports below, or [url="https://github.com/biqqles/p2oggle/issues"]open an issue[/url] on GitHub if you prefer.
+
+[size="4"][b]Changelog[/b][/size]
+[b]Latest version - 0.4[/b]
+Changes in this release:
+[list]
+[*] New action: [i]Caffeine[/i]
+[*] Fixed a crash on unrooted devices
+[/list]
+[b]Older versions[/b]
+[hide][b]0.3[/b]
+Changes in this release:
+[list]
+[*] App should now be compatible with Android 10
+[*] Minimised number of [font="monospace"]su[/font] processes to reduce toast notification spam from Magisk and lag on enabling service
+[/list]
+[b]0.2[/b]
+New in this release:
+[list]
+[*] New actions: [i]Vibrate[/i], [i]Silent[/i], [i]Play/pause[/i], [i]Location[/i], [i]Priority only[/i], [i]Alarms only[/i]
+[*] New option: [i]Emit broadcasts for other apps[/i] - this lets you extend P2oggle with apps such as Tasker
+[*] Overlay theming options added
+[*] Action [i]Silent mode[/i] renamed to [i]Total silence[/i] to better represent its function
+[*] Better error messages on initial setup
+[/list]
+Bug fixes in this release:
+[list]
+[*] Overlay should now be completely reliable
+[*] Disabling [i]Start on boot[/i] now actually works
+[*] Service now immediately unbinds from switch when disabled
+[*] Disabled [i]Notification settings[/i] and [i]Hide[/i] intents on N, where using these options would prevent the overlay from working
+[*] Fixed superuser access not being detected until app restart
+[/list]
+[b]0.1[/b]
+[list]
+[*] Initial release
+[/list][/hide]
