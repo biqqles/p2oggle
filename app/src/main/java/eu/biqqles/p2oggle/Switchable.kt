@@ -305,8 +305,8 @@ object Caffeine : SwitchableAction {
     private lateinit var handler: Handler
     private val toastSpammer = object : Runnable {
         override fun run() {
-            invisibleToast.show()
             if (powerManager.isInteractive) {  // disable when screen turned off
+                invisibleToast.show()
                 handler.postDelayed(this, SHORT_DELAY)
             }
         }
@@ -316,6 +316,7 @@ object Caffeine : SwitchableAction {
         if (toggled) {
             handler.postDelayed(toastSpammer, SHORT_DELAY)  // leave time for overlay to show
         } else {
+            invisibleToast.cancel()  // ensure overlay shows immediately on Q where toasts are sequential
             handler.removeCallbacks(toastSpammer)
         }
     }
