@@ -32,7 +32,7 @@
         <item>light</item>
     </string-array>
     <string-array name="overlay_bg_values">
-        <item>System</item>
+        <item>Automatic</item>
         <item>Dark</item>
         <item>Light</item>
     </string-array>
