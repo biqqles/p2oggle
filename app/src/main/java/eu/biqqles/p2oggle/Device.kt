@@ -90,24 +90,23 @@ object Device {
     private fun initialiseQShim(): String {
         // On Android Q and above, access to the filesystem from the JVM is restricted. To work around this, watch the
         // device file with inotifyd and mirror writes to a file we _can_ access. Return this file's path.
-        val file = File(SHIM_DEVICE)
-        val scriptPath = File(file.parentFile, "shim.sh")
-        Log.i(logTag, "Initialising shim with device ${file.absolutePath} and script ${scriptPath.absolutePath}")
+        val pipe = File.createTempFile("shim", ".pipe").absolutePath
+        val script = File.createTempFile("shim", ".sh").absolutePath
+        Log.i(logTag, "Initialising shim with pipe '$pipe' and script '$script'")
 
-        val copyStruct = "su -c head -n ${InputEvent.SIZE} $DEVICE_FILE >> $SHIM_DEVICE"
-        Shell.runAsRoot("echo '$copyStruct' > $scriptPath && chmod a+x $scriptPath")
+        // create a script which copies each struct from the device to the pipe
+        val copyStruct = "head -n ${InputEvent.SIZE} $DEVICE_FILE >> $pipe"
+        Shell.runAsRoot("echo '$copyStruct' > $script && chmod a+x $script")
 
-        Shell.runAsRoot(": > $SHIM_DEVICE")  // clear or create file
-        Shell.run("su -c inotifyd $scriptPath $DEVICE_FILE")  // start inotifyd in a new process
+        // start inotifyd in a new process
+        Shell.run("su -c inotifyd $script $DEVICE_FILE")
 
-        return file.absolutePath
+        return pipe
     }
 }
 
 // Paths
 private const val DEVICE_FILE = "/dev/input/event4"
-@Suppress("SdCardPath")  // need to get this statically
-private const val SHIM_DEVICE = "/data/data/${BuildConfig.APPLICATION_ID}/cache/shim"
 
 // Definitions from input.h and input-event-codes.h
 private const val EV_SW: Short = 0x05
