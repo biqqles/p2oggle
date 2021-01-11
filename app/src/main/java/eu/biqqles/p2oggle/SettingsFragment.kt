@@ -33,7 +33,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         multiprocessPreferences = TreasurePreferences.getInstance(context, "service")
 
-        activityManager = activity!!.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        activityManager = requireActivity().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

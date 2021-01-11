@@ -8,6 +8,7 @@
 
 package eu.biqqles.p2oggle
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -28,15 +29,17 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
     // namely that it will not display on the lock screen or above other system UI elements like the status bar.
     // Not entirely sure inflating an arbitrary layout in a toast should be allowed, but anyway...
     private inner class SwitchToast(alertParameters: Pair<Drawable, String>): Toast(context) {
-        private val icon: ImageView by lazy { view.findViewById<ImageView>(R.id.overlayIcon) }
-        private val text: TextView by lazy { view.findViewById<TextView>(android.R.id.message) }
+        private val icon: ImageView by lazy { view.findViewById(R.id.overlayIcon) }
+        private val text: TextView by lazy { view.findViewById(android.R.id.message) }
         private val showText = preferences.getBoolean("overlay_text", true)
         private val systemAccent = preferences.getBoolean("overlay_system_accent", true)
         private val background = preferences.getString("overlay_bg_colour", "dark")
         private val display: Display
 
         init {
+            @SuppressLint("InflateParams")
             view = LayoutInflater.from(context).inflate(R.layout.overlay, null)
+
             duration = LENGTH_SHORT
 
             val (drawable, message) = alertParameters

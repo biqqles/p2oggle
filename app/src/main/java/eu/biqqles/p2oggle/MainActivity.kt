@@ -9,6 +9,7 @@
 package eu.biqqles.p2oggle
 
 import android.animation.LayoutTransition
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -22,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import org.xjy.android.treasure.TreasurePreferences
 
+@SuppressLint("UseSwitchCompatOrMaterialCode")
 class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var serviceSwitch: Switch
@@ -105,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         }, timeout)
     }
 
-    fun showSimpleDialogue(message: String) = with(AlertDialog.Builder(this)) {
+    fun showSimpleDialogue(message: String): Unit = with(AlertDialog.Builder(this)) {
         // Show a simple dialogue with an OK button.
         setPositiveButton(android.R.string.ok) { dialogue, _ -> dialogue.dismiss() }
         setMessage(message)
@@ -113,5 +115,5 @@ class MainActivity : AppCompatActivity() {
         show()
     }
 
-    fun showSimpleDialogue(@StringRes message: Int) = showSimpleDialogue(getString(message))
+    private fun showSimpleDialogue(@StringRes message: Int): Unit = showSimpleDialogue(getString(message))
 }

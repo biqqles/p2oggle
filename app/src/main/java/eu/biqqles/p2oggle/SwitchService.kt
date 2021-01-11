@@ -39,10 +39,10 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             whileScreenOff = loadSwitchableFromPreferences("action_screen_off")
             whileScreenOn = loadSwitchableFromPreferences("action_screen_on")
 
-            if (whileScreenOn !is Nothing && preferences.getBoolean("show_overlay", true)) {
-                widget = Overlay(applicationContext, whileScreenOn, preferences)
+            widget = if (whileScreenOn !is Nothing && preferences.getBoolean("show_overlay", true)) {
+                Overlay(applicationContext, whileScreenOn, preferences)
             } else {
-                widget = null
+                null
             }
         }
 
@@ -137,6 +137,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
                 null
             }
 
+        @Suppress("UsePropertyAccessSyntax")
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID).apply {
             setSmallIcon(R.drawable.ic_toggle_on)
             setContentTitle(getString(R.string.service_notification_title))

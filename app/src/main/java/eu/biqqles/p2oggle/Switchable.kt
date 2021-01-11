@@ -8,6 +8,7 @@
 
 package eu.biqqles.p2oggle
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
@@ -30,6 +31,7 @@ interface Switchable {
     fun switched(toggled: Boolean)
 }
 
+@SuppressLint("UseCompatLoadingForDrawables")
 interface SwitchableAction : Switchable {
     // A user-facing "action" that can be assigned to the switch.
     @get:StringRes val name: Int
@@ -213,6 +215,7 @@ private interface RingerAction : AudioAction {
     var previousMode: Int
 
     override fun switched(toggled: Boolean) {
+        @Suppress("CascadeIf")
         if (toggled) {
             previousMode = audioManager.ringerMode
             setRingerMode(toMode)
@@ -271,6 +274,7 @@ object TotalSilence : DnDAction {
     override val toFilter = NotificationManager.INTERRUPTION_FILTER_NONE
 }
 
+@SuppressLint("UseCompatLoadingForDrawables")
 object PlayPause : AudioAction {
     override val name = R.string.action_play_pause
     override val iconOff = R.drawable.ic_pause
