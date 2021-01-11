@@ -8,7 +8,6 @@
 
 package eu.biqqles.p2oggle
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
@@ -26,12 +25,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import android.annotation.SuppressLint as SuppressLint1
 
 interface Switchable {
     fun switched(toggled: Boolean)
 }
 
-@SuppressLint("UseCompatLoadingForDrawables")
+@SuppressLint1("UseCompatLoadingForDrawables")
 interface SwitchableAction : Switchable {
     // A user-facing "action" that can be assigned to the switch.
     @get:StringRes val name: Int
@@ -274,7 +274,7 @@ object TotalSilence : DnDAction {
     override val toFilter = NotificationManager.INTERRUPTION_FILTER_NONE
 }
 
-@SuppressLint("UseCompatLoadingForDrawables")
+@SuppressLint1("UseCompatLoadingForDrawables")
 object PlayPause : AudioAction {
     override val name = R.string.action_play_pause
     override val iconOff = R.drawable.ic_pause
@@ -298,42 +298,34 @@ object PlayPause : AudioAction {
 }
 
 object Caffeine : SwitchableAction {
-    // An action that keeps the screen awake using an invisible toast which periodically resets the screen off timeout
-    // counter. This method is preferable to, for example, setting the screen timeout value as it has no side effects
-    // and requires no permissions.
+    // An action that keeps the screen awake using the deprecated "screen on" wakelock. The wakelock is cancelled when
+    // the user presses the power button or moves the switch to off.
+    //
+    // Another method I came up with is to display an invisible toast every few seconds which resets the screen off
+    // timeout counter. This works on AOSP-like ROMs (Q and above), e.g. Lineage, but not on others.
+    //
+    // Though this wakelock type has been deprecated for years it still seems to work fine on most if not all Q ROMs.
+    // We'll see how long that stays the case...
+
     override val name = R.string.action_caffeine
     override val iconOff = R.drawable.ic_caffeine
     override val iconOn = R.drawable.ic_caffeine
-    private lateinit var powerManager: PowerManager
-    private lateinit var invisibleToast: Toast
-    private lateinit var handler: Handler
-    private val toastSpammer = object : Runnable {
-        override fun run() {
-            if (powerManager.isInteractive) {  // disable when screen turned off
-                invisibleToast.show()
-                handler.postDelayed(this, SHORT_DELAY)
-            }
-        }
-    }
+    private lateinit var wakelock: PowerManager.WakeLock
 
+    @Suppress("WakelockTimeout")
     override fun switched(toggled: Boolean) {
         if (toggled) {
-            handler.postDelayed(toastSpammer, SHORT_DELAY)  // leave time for overlay to show
+            wakelock.acquire()
         } else {
-            invisibleToast.cancel()  // ensure overlay shows immediately on Q where toasts are sequential
-            handler.removeCallbacks(toastSpammer)
+            wakelock.release();
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun invoke(context: Context): SwitchableAction {
-        powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-        invisibleToast = Toast(context).apply {
-            view = View(context)  // empty view
-            duration = Toast.LENGTH_SHORT
-        }
-        handler = Handler()
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakelock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "P2oggle:Caffeine")
+        wakelock.setReferenceCounted(false)  // allows one "release" to undo any number of "acquires"
         return this
     }
-
-    private const val SHORT_DELAY: Long = 2000  // from NotificationManagerService
 }
