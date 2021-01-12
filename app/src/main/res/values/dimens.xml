@@ -4,4 +4,6 @@
     <dimen name="overlay_corner_radius">10dp</dimen>
     <dimen name="overlay_text_size">14sp</dimen>
     <dimen name="overlay_padding">4dp</dimen>
+    <dimen name="preference_height">52dp</dimen>
+    <dimen name="preference_margin">15dp</dimen>
 </resources>

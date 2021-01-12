@@ -16,17 +16,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Switch
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import org.xjy.android.treasure.TreasurePreferences
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
-    private lateinit var serviceSwitch: Switch
+    private lateinit var serviceSwitch: SwitchCompat
     private lateinit var preferences: TreasurePreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {

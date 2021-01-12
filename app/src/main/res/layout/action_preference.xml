@@ -6,22 +6,23 @@
   ~  file, You can obtain one at http://mozilla.org/MPL/2.0/.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:gravity="center_vertical"
-              android:minHeight="52dp"
-              android:paddingStart="15dp"
-              android:paddingEnd="15dp"
-              android:layout_gravity="center_horizontal"
-              android:layout_width="fill_parent"
-              android:layout_height="wrap_content"
-              android:textAppearance="?android:attr/textAppearanceListItem">
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/preference_height"
+        android:paddingStart="@dimen/preference_margin"
+        android:paddingEnd="@dimen/preference_margin"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItem">
 
 
     <TextView
             android:id="@android:id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="15dip"
+            android:layout_marginEnd="@dimen/preference_margin"
             android:layout_weight="1"
             android:ellipsize="marquee"
             android:fadingEdge="horizontal"

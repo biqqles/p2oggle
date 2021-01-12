@@ -17,11 +17,9 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.net.wifi.WifiManager
-import android.os.Handler
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.KeyEvent
-import android.view.View
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -317,7 +315,7 @@ object Caffeine : SwitchableAction {
         if (toggled) {
             wakelock.acquire()
         } else {
-            wakelock.release();
+            wakelock.release()
         }
     }
 
