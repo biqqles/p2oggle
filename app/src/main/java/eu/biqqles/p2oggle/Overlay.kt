@@ -83,18 +83,19 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
         }
     }
 
-    private val toastOff: SwitchToast  // having two toasts is far more reliable than updating one
-    private val toastOn: SwitchToast
+    private val toasts: HashMap<Boolean, SwitchToast>  // having two toasts is far more reliable than updating one
 
     init {
-        toastOff = SwitchToast(switchable.getAlertParametersOff(context))
-        toastOn = SwitchToast(switchable.getAlertParametersOn(context))
+        toasts = hashMapOf(
+            false to SwitchToast(switchable.getAlertParametersOff(context)),
+            true to SwitchToast(switchable.getAlertParametersOn(context))
+        )
     }
 
     fun draw(toggled: Boolean) {
         // Draw the overlay next to the physical location of the switch.
-        val toast = if (toggled) toastOn else toastOff
-        toast.show()
+        toasts[toggled]?.show()
+        toasts[!toggled]?.cancel()
     }
 
     @ColorRes
