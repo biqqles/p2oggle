@@ -23,13 +23,12 @@ import android.view.KeyEvent
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import android.annotation.SuppressLint as SuppressLint1
 
 interface Switchable {
     fun switched(toggled: Boolean)
 }
 
-@SuppressLint1("UseCompatLoadingForDrawables")
+@Suppress("UseCompatLoadingForDrawables")
 interface SwitchableAction : Switchable {
     // A user-facing "action" that can be assigned to the switch.
     @get:StringRes val name: Int
@@ -272,7 +271,7 @@ object TotalSilence : DnDAction {
     override val toFilter = NotificationManager.INTERRUPTION_FILTER_NONE
 }
 
-@SuppressLint1("UseCompatLoadingForDrawables")
+@Suppress("UseCompatLoadingForDrawables")
 object PlayPause : AudioAction {
     override val name = R.string.action_play_pause
     override val iconOff = R.drawable.ic_pause
