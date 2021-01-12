@@ -90,6 +90,8 @@ object Device {
     private fun initialiseQShim(): String {
         // On Android Q and above, access to the filesystem from the JVM is restricted. To work around this, watch the
         // device file with inotifyd and mirror writes to a file we _can_ access. Return this file's path.
+        File.createTempFile("dummy", null).parentFile.listFiles().forEach { it.delete() }  // clear cache directory
+
         val pipe = File.createTempFile("shim", ".pipe").absolutePath
         val script = File.createTempFile("shim", ".sh").absolutePath
         Log.i(logTag, "Initialising shim with pipe '$pipe' and script '$script'")
