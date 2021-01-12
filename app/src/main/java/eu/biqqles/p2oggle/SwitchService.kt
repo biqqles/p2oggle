@@ -77,13 +77,6 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         // Start this service in the foreground.
         super.onCreate()
         startForeground(NOTIFICATION_ID, createNotification())
-
-        preferences = TreasurePreferences.getInstance(this, "service")
-        preferences.registerOnSharedPreferenceChangeListener(this,
-            listOf("action_screen_off", "action_screen_on", "show_overlay", "overlay_text",
-                "overlay_system_accent", "overlay_bg_colour"))
-
-        attachCallback()
     }
 
     override fun onDestroy() {
@@ -97,8 +90,10 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Handle starting intents.
+        // Handle start intents.
         super.onStartCommand(intent, flags, startId)
+
+        bindPreferences()
 
         // abort conditions
         if (!enabled ||
@@ -107,6 +102,15 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             return START_NOT_STICKY
         }
         return START_STICKY
+    }
+
+    private fun bindPreferences() {
+        // Bind this service to the shared preferences.
+        preferences = TreasurePreferences.getInstance(this, "service")
+        preferences.registerOnSharedPreferenceChangeListener(this,
+            listOf("action_screen_off", "action_screen_on", "show_overlay", "overlay_text",
+                "overlay_system_accent", "overlay_bg_colour"))
+        attachCallback()
     }
 
     private fun attachCallback() {
