@@ -11,24 +11,21 @@ package eu.biqqles.p2oggle
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.PowerManager
-import android.provider.Settings
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 
 interface Switchable {
     fun switched(toggled: Boolean)
 }
 
-@Suppress("UseCompatLoadingForDrawables")
 interface SwitchableAction : Switchable {
     // A user-facing "action" that can be assigned to the switch.
     @get:StringRes val name: Int
@@ -40,12 +37,23 @@ interface SwitchableAction : Switchable {
 
     fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
         // Return an icon and message to alert the user of this action being toggled off.
-        return Pair(context.getDrawable(iconOff), context.getString(name) + context.getString(R.string.off))
+        return Pair(icon(context,false), text(context,false))
     }
 
     fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
         // Return parameters to alert the user of this action being toggled on.
-        return Pair(context.getDrawable(iconOn), context.getString(name) + context.getString(R.string.on))
+        return Pair(icon(context,true), text(context,true))
+    }
+
+    fun icon(context: Context, switched: Boolean): Drawable {
+        // The icon for the given switch position.
+        return ContextCompat.getDrawable(context, if (switched) iconOn else iconOff)!!
+    }
+
+    fun text(context: Context, switched: Boolean): String {
+        // The text for the given switch position.
+        val state = context.getString(if (switched) R.string.on else R.string.off)
+        return context.getString(name) + state
     }
 }
 
@@ -254,34 +262,6 @@ object TotalSilence : DnDAction {
     override val toFilter = NotificationManager.INTERRUPTION_FILTER_NONE
 }
 
-@Suppress("UseCompatLoadingForDrawables")
-object PlayPause : SwitchableAction {
-    override val name = R.string.action_play_pause
-    override val iconOff = R.drawable.ic_pause
-    override val iconOn = R.drawable.ic_play
-    private lateinit var audioManager: AudioManager
-    private const val nameOff = R.string.pause
-    private const val nameOn = R.string.play
-
-    override fun switched(toggled: Boolean) {
-        sendMediaKeyEvent(if (toggled) KeyEvent.KEYCODE_MEDIA_PLAY else KeyEvent.KEYCODE_MEDIA_PAUSE)
-    }
-
-    override fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
-        return Pair(context.getDrawable(iconOff), context.getString(nameOff))
-    }
-
-    override fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
-        return Pair(context.getDrawable(iconOn), context.getString(nameOn))
-    }
-
-    private fun sendMediaKeyEvent(keyCode: Int) {
-        // Send a media key event.
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
-    }
-}
-
 object Caffeine : SwitchableAction {
     // An action that keeps the screen awake using the deprecated "screen on" wakelock. The wakelock is cancelled when
     // the user presses the power button or moves the switch to off.
@@ -312,5 +292,28 @@ object Caffeine : SwitchableAction {
         wakelock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "P2oggle:Caffeine")
         wakelock.setReferenceCounted(false)  // allows one "release" to undo any number of "acquires"
         return this
+    }
+}
+
+object PlayPause : SwitchableAction {
+    override val name = R.string.action_play_pause
+    override val iconOff = R.drawable.ic_pause
+    override val iconOn = R.drawable.ic_play
+    private lateinit var audioManager: AudioManager
+    private const val nameOff = R.string.pause
+    private const val nameOn = R.string.play
+
+    override fun switched(toggled: Boolean) {
+        sendMediaKeyEvent(if (toggled) KeyEvent.KEYCODE_MEDIA_PLAY else KeyEvent.KEYCODE_MEDIA_PAUSE)
+    }
+
+    override fun text(context: Context, switched: Boolean): String {
+        return context.getString(if (switched) nameOn else nameOff)
+    }
+
+    private fun sendMediaKeyEvent(keyCode: Int) {
+        // Send a media key event.
+        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
     }
 }
