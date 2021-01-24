@@ -9,11 +9,15 @@
 package eu.biqqles.p2oggle
 
 import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.format.Formatter
+import android.widget.Toast
 import androidx.preference.*
 import org.xjy.android.treasure.TreasurePreferences
 import java.util.*
@@ -23,6 +27,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var sharedPreferences: SharedPreferences  // SharedPreferences does not work across processes...
     private lateinit var multiprocessPreferences: TreasurePreferences  // so we mirror it to an implementation that does
     private lateinit var activityManager: ActivityManager
+    private lateinit var notificationManager: NotificationManager
+
     private var statTimer = Timer()
 
     override fun onAttach(context: Context) {
@@ -32,8 +38,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         PreferenceManager.setDefaultValues(context, R.xml.preferences, true)  // only runs once
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         multiprocessPreferences = TreasurePreferences.getInstance(context, "service")
-
-        activityManager = requireActivity().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -45,11 +51,18 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         val actionScreenOn = findPreference<ListPreference>("action_screen_on")!!
 
         val entries = SwitchService.switchables.entries.associate { it.key to getString(it.value.name) }
+        val audioActions = SwitchService.switchables.filterValues { it is AudioAction }.keys
 
         for (preference in arrayOf(actionScreenOff, actionScreenOn)) {
             preference.entryValues = entries.keys.toTypedArray()
             preference.entries = entries.values.toTypedArray()
             preference.setDefaultValue(entries["Nothing"])
+            preference.setOnPreferenceChangeListener { _, action ->
+                if (action in audioActions) {
+                    return@setOnPreferenceChangeListener requestNotificationPolicyAccess()
+                }
+                return@setOnPreferenceChangeListener true
+            }
         }
 
         // disable notification settings on N. Prior to notification channels the only option is to hide all
@@ -124,6 +137,19 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         .format(TimeUnit.MILLISECONDS.toHours(ms),
                 TimeUnit.MILLISECONDS.toMinutes(ms) % TimeUnit.HOURS.toMinutes(1),
                 TimeUnit.MILLISECONDS.toSeconds(ms) % TimeUnit.MINUTES.toSeconds(1))
+
+    private fun requestNotificationPolicyAccess(): Boolean {
+        // Request notification policy access, returning whether it was originally granted.
+        if (notificationManager.isNotificationPolicyAccessGranted) {
+            return true
+        }
+        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+        Toast.makeText(context, R.string.request_permission, Toast.LENGTH_LONG).show()
+        requireActivity().startActivity(intent)
+        return false
+    }
 
     companion object {
         const val STAT_UPDATE_PERIOD_MS = 1000L

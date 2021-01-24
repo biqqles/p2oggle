@@ -59,7 +59,7 @@
                                    the switch is moved up and\n%2$s\nwhen it is moved down.\n\nYou can use these
                                    broadcasts to extend P2oggle with apps that can listen for these intents.</string>
 
-    <string name="request_permission">Please enable P2oggle</string>
+    <string name="request_permission">Please grant access to P2oggle</string>
 
     <!--Action strings-->
     <string name="off">" off"</string>

@@ -35,7 +35,8 @@ interface SwitchableAction : Switchable {
     @get:DrawableRes val iconOff: Int
     @get:DrawableRes val iconOn: Int
 
-    operator fun invoke(context: Context): SwitchableAction = this  // pseudo-constructor
+    // This pseudo-constructor allows Switchables to be objects, meaning they can be referenced statically.
+    operator fun invoke(context: Context): SwitchableAction = this
 
     fun getAlertParametersOff(context: Context): Pair<Drawable, String> {
         // Return an icon and message to alert the user of this action being toggled off.
@@ -161,14 +162,13 @@ object Location : SwitchableAction {
     }
 }
 
-private interface AudioAction : SwitchableAction {
+internal interface AudioAction : SwitchableAction {
     var audioManager: AudioManager
     var notificationManager: NotificationManager
 
     override operator fun invoke(context: Context): SwitchableAction {
         audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        requestNotificationPolicyAccess(context)
         return this
     }
 
@@ -178,23 +178,6 @@ private interface AudioAction : SwitchableAction {
         audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
         audioManager.ringerMode = ringerMode
         notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-    }
-
-    fun sendMediaKeyEvent(keyCode: Int) {
-        // Send a media key event.
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
-    }
-
-    fun requestNotificationPolicyAccess(context: Context) {
-        // If notification policy access is not granted, request it.
-        if (!notificationManager.isNotificationPolicyAccessGranted) {
-            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-            context.startActivity(intent)
-            Toast.makeText(context, R.string.request_permission, Toast.LENGTH_LONG).show()
-        }
     }
 }
 
@@ -272,12 +255,11 @@ object TotalSilence : DnDAction {
 }
 
 @Suppress("UseCompatLoadingForDrawables")
-object PlayPause : AudioAction {
+object PlayPause : SwitchableAction {
     override val name = R.string.action_play_pause
     override val iconOff = R.drawable.ic_pause
     override val iconOn = R.drawable.ic_play
-    override lateinit var audioManager: AudioManager
-    override lateinit var notificationManager: NotificationManager
+    private lateinit var audioManager: AudioManager
     private const val nameOff = R.string.pause
     private const val nameOn = R.string.play
 
@@ -291,6 +273,12 @@ object PlayPause : AudioAction {
 
     override fun getAlertParametersOn(context: Context): Pair<Drawable, String> {
         return Pair(context.getDrawable(iconOn), context.getString(nameOn))
+    }
+
+    private fun sendMediaKeyEvent(keyCode: Int) {
+        // Send a media key event.
+        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+        audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
     }
 }
 
