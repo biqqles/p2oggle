@@ -35,7 +35,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         // Called when added to activity.
         super.onAttach(context)
 
-        PreferenceManager.setDefaultValues(context, R.xml.preferences, true)  // only runs once
+        PreferenceManager.setDefaultValues(context, R.xml.preferences, false)  // only runs once
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         multiprocessPreferences = TreasurePreferences.getInstance(context, "service")
         activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
