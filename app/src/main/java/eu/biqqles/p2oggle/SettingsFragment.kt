@@ -96,8 +96,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         // begin polling statistics
+        val statPreference = findPreference<Preference>("service_stats")!!
+
         statTimer.scheduleAtFixedRate(object : TimerTask() {
-            val statPreference = findPreference<Preference>("service_stats")!!
             override fun run() {
                 activity?.runOnUiThread {
                     updateStatistics(statPreference)
