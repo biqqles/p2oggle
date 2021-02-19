@@ -22,6 +22,7 @@ import androidx.preference.*
 import org.xjy.android.treasure.TreasurePreferences
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.timerTask
 
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var sharedPreferences: SharedPreferences  // SharedPreferences does not work across processes...
@@ -98,11 +99,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         // begin polling statistics
         val statPreference = findPreference<Preference>("service_stats")!!
 
-        statTimer.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                activity?.runOnUiThread {
-                    updateStatistics(statPreference)
-                }
+        statTimer.scheduleAtFixedRate(timerTask {
+            activity?.runOnUiThread {
+                updateStatistics(statPreference)
             }
         }, 0, STAT_UPDATE_PERIOD_MS)
     }
