@@ -33,12 +33,14 @@
                 android:key="overlay_text"
                 android:title="@string/pref_title_overlay_text"
                 android:defaultValue="true"
+                android:dependency="show_overlay"
                 app:iconSpaceReserved="false" />
 
         <CheckBoxPreference
                 android:key="overlay_system_accent"
                 android:title="@string/pref_title_overlay_system_theme"
                 android:defaultValue="true"
+                android:dependency="show_overlay"
                 app:iconSpaceReserved="false" />
 
         <ListPreference
@@ -47,6 +49,7 @@
                 android:entries="@array/overlay_bg_values"
                 android:entryValues="@array/overlay_bg_indices"
                 android:defaultValue="dark"
+                android:dependency="show_overlay"
                 app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
