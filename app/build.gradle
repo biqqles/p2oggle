@@ -8,8 +8,8 @@ android {
         minSdkVersion 25  // last stock release for kuntao (7.1.1)
         //noinspection OldTargetApi - not dealing with the IO library changes in Q
         targetSdkVersion 28
-        versionCode 04
-        versionName "0.4"
+        versionCode 10
+        versionName '1.0'
         resValue "string", "org_xjy_android_treasure_authority", "${applicationId}.preferences"
     }
     
