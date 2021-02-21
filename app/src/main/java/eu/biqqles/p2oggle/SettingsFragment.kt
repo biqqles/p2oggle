@@ -13,16 +13,20 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.format.Formatter
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.preference.*
 import org.xjy.android.treasure.TreasurePreferences
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.timerTask
+import android.Manifest
 
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var sharedPreferences: SharedPreferences  // SharedPreferences does not work across processes...
@@ -59,10 +63,17 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             preference.entries = entries.values.toTypedArray()
             preference.setDefaultValue(entries["Nothing"])
             preference.setOnPreferenceChangeListener { _, action ->
-                if (action in audioActions) {
-                    return@setOnPreferenceChangeListener requestNotificationPolicyAccess()
+                when (action) {
+                    in audioActions -> {
+                        requestNotificationPolicyAccess()
+                    }
+                    "Dictaphone" -> {
+                        requestRecordingPermissions()
+                    }
+                    else -> {
+                        true
+                    }
                 }
-                return@setOnPreferenceChangeListener true
             }
         }
 
@@ -123,7 +134,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         }
     }
 
-    fun updateStatistics(preference: Preference) {
+    private fun updateStatistics(preference: Preference) {
         // Update the statistics.
         val (uptime, memory) = SwitchService.getStats(activityManager)
         val memoryFormatted = Formatter.formatFileSize(activity, memory)
@@ -150,6 +161,20 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         requireActivity().startActivity(intent)
         return false
     }
+
+    private fun requestRecordingPermissions(): Boolean {
+        // Request storage and mic access, returning whether they were originally granted.
+        if (isPermissionGranted(Manifest.permission.RECORD_AUDIO) &&
+            isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            return true
+        }
+        ActivityCompat.requestPermissions(requireActivity(),
+            arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        return false
+    }
+
+    private fun isPermissionGranted(permission: String): Boolean =
+        (ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED)
 
     companion object {
         const val STAT_UPDATE_PERIOD_MS = 1000L

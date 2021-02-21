@@ -21,6 +21,7 @@ The [Lenovo P2](https://en.wikipedia.org/wiki/Lenovo_P2) features a somewhat unu
   - Total silence
   - Play/pause
   - Caffeine
+  - Dictaphone
 
 </details>
 

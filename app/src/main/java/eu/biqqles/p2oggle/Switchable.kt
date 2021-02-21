@@ -15,12 +15,20 @@ import android.graphics.drawable.Drawable
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
+import android.media.MediaRecorder
 import android.net.wifi.WifiManager
+import android.os.Environment
 import android.os.PowerManager
+import android.util.Log
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import java.io.File
+import java.lang.RuntimeException
+import java.text.DateFormat
+import java.util.*
 
 interface Switchable {
     fun switched(toggled: Boolean)
@@ -299,9 +307,9 @@ object PlayPause : SwitchableAction {
     override val name = R.string.action_play_pause
     override val iconOff = R.drawable.ic_pause
     override val iconOn = R.drawable.ic_play
-    private lateinit var audioManager: AudioManager
     private const val nameOff = R.string.pause
     private const val nameOn = R.string.play
+    private lateinit var audioManager: AudioManager
 
     override fun switched(toggled: Boolean) {
         sendMediaKeyEvent(if (toggled) KeyEvent.KEYCODE_MEDIA_PLAY else KeyEvent.KEYCODE_MEDIA_PAUSE)
@@ -315,5 +323,81 @@ object PlayPause : SwitchableAction {
         // Send a media key event.
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+    }
+}
+
+object Dictaphone : SwitchableAction {
+    override val name = R.string.action_dictaphone
+    override val iconOff = R.drawable.ic_save
+    override val iconOn = R.drawable.ic_recording
+    private const val nameOff = R.string.saved
+    private const val nameOn = R.string.recording
+    private lateinit var directory: File
+    private lateinit var confimMessage: String
+    private lateinit var confirmToast: Toast
+    private var recorder: MediaRecorder? = null
+    private var currentFilename: String? = null
+
+    private fun startRecording() {
+        // Start making a recording. Create `mediaRecorder` and set `currentFilename`.
+        currentFilename = newFilename().toString()
+
+        recorder = MediaRecorder().apply {
+            try {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setOutputFile(currentFilename)
+            } catch (e: RuntimeException) {
+                Log.e(this::class.java.simpleName, "Tried to record with permissions denied")
+                return
+            }
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            prepare()
+            start()
+        }
+    }
+
+    private fun stopRecording() {
+        // Finish the current recording and save the file.
+        recorder?.apply {
+            stop()
+            release()
+        }
+        confirmToast.apply {
+            setText(confimMessage + currentFilename)
+            show()
+        }
+        recorder = null
+        currentFilename = null
+    }
+
+    private fun newFilename(): File {
+        // Create a file descriptor for a new recording.
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val date = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
+        val filename = "$date.mp3"
+        return File(directory, filename)
+    }
+
+    override fun switched(toggled: Boolean) {
+        if (toggled) {
+            startRecording()
+        } else {
+            stopRecording()
+        }
+    }
+
+    override fun text(context: Context, switched: Boolean): String {
+        return context.getString(if (switched) nameOn else nameOff)
+    }
+
+    override fun invoke(context: Context): SwitchableAction {
+        val media = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+        directory = File(media, "P2oggle")
+        confimMessage = context.getString(R.string.saved_to)
+        confirmToast = Toast.makeText(context, confimMessage, Toast.LENGTH_LONG)
+        return this
     }
 }

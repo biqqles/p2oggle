@@ -66,6 +66,10 @@
     <string name="on">" on"</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
+    <string name="recording">Recording</string>
+    <string name="saved">Saved</string>
+    <string name="saved_to">Saved to </string>
+
     <string name="action_nothing">Nothing</string>
     <string name="action_flashlight">Flashlight</string>
     <string name="action_total_silence">Total silence</string>
@@ -82,5 +86,6 @@
     <string name="action_alarms_only">Alarms only</string>
     <string name="action_priority_only">Priority only</string>
     <string name="action_caffeine">Caffeine</string>
+    <string name="action_dictaphone">Dictaphone</string>
 
 </resources>
