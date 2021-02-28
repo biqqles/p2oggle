@@ -19,14 +19,11 @@ object Shell {
     }
 
     val isRootAvailable: Boolean
-        // Check whether suProcess has exited. If it has, assume su is not available.
+        // Check whether su is available and access has been granted.
         get() = try {
-            suProcess.exitValue()
-            false
+            run("su -c :").waitFor() == 0
         } catch (e: IOException) {
             false
-        } catch (e: IllegalThreadStateException) {
-            true
         }
 
     fun run(command: String): Process {
