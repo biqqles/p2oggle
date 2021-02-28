@@ -324,6 +324,11 @@ object PlayPause : SwitchableAction {
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
         audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
     }
+
+    override fun invoke(context: Context): SwitchableAction {
+        audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        return this
+    }
 }
 
 object Dictaphone : SwitchableAction {
