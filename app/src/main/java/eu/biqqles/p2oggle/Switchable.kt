@@ -338,7 +338,7 @@ object Dictaphone : SwitchableAction {
     private const val nameOff = R.string.saved
     private const val nameOn = R.string.recording
     private lateinit var directory: File
-    private lateinit var confimMessage: String
+    private lateinit var confirmMessage: String
     private lateinit var confirmToast: Toast
     private var recorder: MediaRecorder? = null
     private var currentFilename: String? = null
@@ -369,7 +369,7 @@ object Dictaphone : SwitchableAction {
             release()
         }
         confirmToast.apply {
-            setText(confimMessage + currentFilename)
+            setText(confirmMessage + currentFilename)
             show()
         }
         recorder = null
@@ -401,8 +401,8 @@ object Dictaphone : SwitchableAction {
     override fun invoke(context: Context): SwitchableAction {
         val media = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
         directory = File(media, "P2oggle")
-        confimMessage = context.getString(R.string.saved_to)
-        confirmToast = Toast.makeText(context, confimMessage, Toast.LENGTH_LONG)
+        confirmMessage = context.getString(R.string.saved_to)
+        confirmToast = Toast.makeText(context, confirmMessage, Toast.LENGTH_LONG)
         return this
     }
 }
