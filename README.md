@@ -1,5 +1,5 @@
 # P2oggle
-[Jump to source](app/src/main/java/eu/biqqles/p2oggle/) | [Project thread](https://forum.xda-developers.com/devdb/project/?id=34190) | [Screenshots](https://forum.xda-developers.com/devdb/project/?id=34190#screenshots)
+[Jump to source](app/src/main/java/eu/biqqles/p2oggle/) | [Project thread](https://forum.xda-developers.com/lenovo-p2/themes/p2oggle-t3965418) | [Screenshots](https://forum.xda-developers.com/lenovo-p2/themes/p2oggle-t3965418)
 
 The [Lenovo P2](https://en.wikipedia.org/wiki/Lenovo_P2) features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (pronounced "*P-Toggle*") is an app which enables this switch and allows you to assign toggleable "actions" to it.
 
