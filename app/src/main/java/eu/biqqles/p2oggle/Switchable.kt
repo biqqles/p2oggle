@@ -74,8 +74,8 @@ object Nothing : SwitchableAction {
 
 object Flashlight : SwitchableAction {
     override val name: Int = R.string.action_flashlight
-    override val iconOff = R.drawable.ic_flash_off
-    override val iconOn = R.drawable.ic_flash_on
+    override val iconOff = R.drawable.ic_flashlight_off
+    override val iconOn = R.drawable.ic_flashlight_on
     private lateinit var cameraManager: CameraManager
     private lateinit var rearCamera: String
 
