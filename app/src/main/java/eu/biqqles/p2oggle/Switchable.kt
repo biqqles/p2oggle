@@ -121,6 +121,7 @@ object WiFi : SwitchableAction {
     override val iconOn = R.drawable.ic_signal_wifi_on
     private lateinit var manager: WifiManager
 
+    @Suppress("DEPRECATION")
     override fun switched(toggled: Boolean) {
         manager.isWifiEnabled = toggled
     }

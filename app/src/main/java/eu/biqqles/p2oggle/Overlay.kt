@@ -12,7 +12,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.*
@@ -21,6 +20,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import org.xjy.android.treasure.TreasurePreferences
 
 class Overlay(private val context: Context, switchable: SwitchableAction, private val preferences: TreasurePreferences) {
@@ -76,7 +77,8 @@ class Overlay(private val context: Context, switchable: SwitchableAction, privat
                 else -> android.R.color.black
             })
 
-            view.background.setColorFilter(backgroundColour, PorterDuff.Mode.ADD)
+            view.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                                            backgroundColour, BlendModeCompat.SRC_ATOP)
             text.setTextColor(invertColour(backgroundColour))
 
             super.show()

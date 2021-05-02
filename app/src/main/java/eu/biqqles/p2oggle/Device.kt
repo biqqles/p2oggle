@@ -35,7 +35,7 @@ object Device {
             DataInputStream(BufferedInputStream(FileInputStream(file)))
         }
 
-        inotify = object : FileObserver(file) {
+        inotify = object : FileObserver(File(file)) {
             override fun onEvent(event: Int, path: String?) = processLastEvent()
         }
         inotify.startWatching()
@@ -92,7 +92,7 @@ object Device {
         // device file with inotifyd and mirror writes to a file we _can_ access. Return this file's path.
 
         // clear cache directory
-        File.createTempFile("dummy", null).parentFile.listFiles().forEach { it.delete() }
+        File.createTempFile("dummy", null).parentFile!!.listFiles()!!.forEach { it.delete() }
 
         // create temporary files for script and pipe
         val pipe = File.createTempFile("shim", ".pipe").absolutePath
