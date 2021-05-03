@@ -119,16 +119,9 @@ object WiFi : SwitchableAction {
     override val name = R.string.action_wifi
     override val iconOff = R.drawable.ic_signal_wifi_off
     override val iconOn = R.drawable.ic_signal_wifi_on
-    private lateinit var manager: WifiManager
 
-    @Suppress("DEPRECATION")
     override fun switched(toggled: Boolean) {
-        manager.isWifiEnabled = toggled
-    }
-
-    override operator fun invoke(context: Context): SwitchableAction {
-        manager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        return this
+        Shell.runAsRoot("svc wifi ${if (toggled) "enable" else "disable"}")
     }
 }
 
