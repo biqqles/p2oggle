@@ -13,13 +13,15 @@ import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.*
+import android.content.SharedPreferences
+import android.os.Build
+import android.os.IBinder
+import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import android.app.ActivityManager
-import android.content.SharedPreferences
-import android.util.Log
 import org.xjy.android.treasure.TreasurePreferences
 
 class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -147,6 +149,7 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             setContentTitle(getString(R.string.service_notification_title))
             setContentText(getString(R.string.service_description))
             setPriority(NotificationCompat.PRIORITY_LOW)
+            setVisibility(NotificationCompat.VISIBILITY_SECRET)
             addAction(appAction)
             hideAction?.let { addAction(hideAction) }
         }
