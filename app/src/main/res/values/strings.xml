@@ -5,7 +5,7 @@
     <string name="service_notification_title">P2oggle is running</string>
     <string name="service_notification_name">Foreground service</string>
     <string name="service_notification_description">Android requires long-running services to present notifications.
-                                                    You can safely hide these without losing functionality</string>
+                                                    You can safely hide these without losing functionality.</string>
     <string name="service_notification_configure">Configure</string>
     <string name="service_notification_hide">Hide</string>
     <string name="service_description">Listening for switch input</string>
