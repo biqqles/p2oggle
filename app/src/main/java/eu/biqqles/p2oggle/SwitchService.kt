@@ -99,7 +99,8 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
 
         // abort conditions
         if (!enabled ||
-            (preferences.getBoolean("start_on_boot", true) && intent?.action == Intent.ACTION_BOOT_COMPLETED)) {
+            (preferences.getBoolean("start_on_boot", true) &&
+                    intent?.action == Intent.ACTION_BOOT_COMPLETED)) {
             stopSelf(startId)
             return START_NOT_STICKY
         }
@@ -133,12 +134,16 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
 
         val appAction =  // open this app
             NotificationCompat.Action.Builder(0, getString(R.string.service_notification_configure),
-                PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), 0)).build()
+                PendingIntent.getActivity(this, 0,
+                    Intent(this, MainActivity::class.java), 0))
+                .build()
 
         val hideAction =  // open notification channel settings
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationCompat.Action.Builder(0, getString(R.string.service_notification_hide),
-                    PendingIntent.getActivity(this, 0, createNotificationSettingsIntent(packageName), 0)).build()
+                    PendingIntent.getActivity(this, 0,
+                        createNotificationSettingsIntent(packageName), 0))
+                    .build()
             } else {
                 null
             }

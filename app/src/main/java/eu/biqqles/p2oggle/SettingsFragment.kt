@@ -8,6 +8,7 @@
 
 package eu.biqqles.p2oggle
 
+import android.Manifest
 import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.Context
@@ -26,7 +27,6 @@ import org.xjy.android.treasure.TreasurePreferences
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.timerTask
-import android.Manifest
 
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var sharedPreferences: SharedPreferences  // SharedPreferences does not work across processes...

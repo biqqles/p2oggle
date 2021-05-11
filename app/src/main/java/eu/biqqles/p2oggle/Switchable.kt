@@ -16,7 +16,6 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.MediaRecorder
-import android.net.wifi.WifiManager
 import android.os.Environment
 import android.os.PowerManager
 import android.util.Log
@@ -26,7 +25,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import java.io.File
-import java.lang.RuntimeException
 import java.text.DateFormat
 import java.util.*
 
