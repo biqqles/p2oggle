@@ -164,12 +164,17 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
 
     private fun requestRecordingPermissions(): Boolean {
         // Request storage and mic access, returning whether they were originally granted.
-        if (isPermissionGranted(Manifest.permission.RECORD_AUDIO) &&
-            isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        val permissions = arrayListOf(Manifest.permission.RECORD_AUDIO)
+
+        // write external storage is not required on Q and above
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+
+        if (permissions.all { isPermissionGranted(it) }) {
             return true
         }
-        ActivityCompat.requestPermissions(requireActivity(),
-            arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        ActivityCompat.requestPermissions(requireActivity(), permissions.toTypedArray(), 0)
         return false
     }
 
