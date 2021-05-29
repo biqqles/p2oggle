@@ -171,11 +171,12 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        if (permissions.all { isPermissionGranted(it) }) {
-            return true
+        return if (permissions.all { isPermissionGranted(it) }) {
+            true
+        } else {
+            ActivityCompat.requestPermissions(requireActivity(), permissions.toTypedArray(), 0)
+            false
         }
-        ActivityCompat.requestPermissions(requireActivity(), permissions.toTypedArray(), 0)
-        return false
     }
 
     private fun isPermissionGranted(permission: String): Boolean =
