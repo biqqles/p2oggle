@@ -68,7 +68,7 @@
     <string name="pause">Pause</string>
     <string name="recording">Recording</string>
     <string name="saved">Saved</string>
-    <string name="saved_to">Saved to </string>
+    <string name="saved_to">Saved to %1$s</string>
 
     <string name="action_nothing">Nothing</string>
     <string name="action_flashlight">Flashlight</string>

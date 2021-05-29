@@ -10,21 +10,27 @@ package eu.biqqles.p2oggle
 
 import android.app.NotificationManager
 import android.bluetooth.BluetoothAdapter
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Environment
 import android.os.PowerManager
+import android.provider.MediaStore
+import android.provider.MediaStore.MediaColumns
 import android.util.Log
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import java.io.File
+import java.io.FileDescriptor
+import java.lang.RuntimeException
 import java.text.DateFormat
 import java.util.*
 
@@ -329,21 +335,21 @@ object Dictaphone : SwitchableAction {
     override val iconOn = R.drawable.ic_recording
     private const val nameOff = R.string.saved
     private const val nameOn = R.string.recording
-    private lateinit var directory: File
-    private lateinit var confirmMessage: String
+    private const val saveTo = "Music/P2oggle"
+
+    private lateinit var contentResolver: ContentResolver
     private lateinit var confirmToast: Toast
     private var recorder: MediaRecorder? = null
-    private var currentFilename: String? = null
 
     private fun startRecording() {
         // Start making a recording. Create `mediaRecorder` and set `currentFilename`.
-        currentFilename = newFilename().toString()
+        val file = newFile() ?: return
 
         recorder = MediaRecorder().apply {
             try {
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setOutputFile(currentFilename)
+                setOutputFile(file)
             } catch (e: RuntimeException) {
                 Log.e(this::class.java.simpleName, "Tried to record with permissions denied")
                 return
@@ -360,22 +366,34 @@ object Dictaphone : SwitchableAction {
             stop()
             release()
         }
-        confirmToast.apply {
-            setText(confirmMessage + currentFilename)
-            show()
-        }
         recorder = null
-        currentFilename = null
+
+        confirmToast.show()
     }
 
-    private fun newFilename(): File {
+    private fun newFile(): FileDescriptor? {
         // Create a file descriptor for a new recording.
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
         val date = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
         val filename = "$date.mp3"
-        return File(directory, filename)
+
+        val values = ContentValues().apply {
+            put(MediaColumns.TITLE, date)
+            put(MediaColumns.MIME_TYPE, "audio/mp3")
+
+            // store the file in a subdirectory
+            @Suppress("DEPRECATION")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaColumns.DISPLAY_NAME, filename)
+                put(MediaColumns.RELATIVE_PATH, saveTo)
+            } else {
+                // RELATIVE_PATH was added in Q, so work around it by using DATA
+                val music = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).path
+                put(MediaColumns.DATA, "$music/P2oggle/$filename")
+            }
+        }
+
+        val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)!!
+        return contentResolver.openFileDescriptor(uri, "w")?.fileDescriptor
     }
 
     override fun switched(toggled: Boolean) {
@@ -391,10 +409,10 @@ object Dictaphone : SwitchableAction {
     }
 
     override fun invoke(context: Context): SwitchableAction {
-        val media = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-        directory = File(media, "P2oggle")
-        confirmMessage = context.getString(R.string.saved_to)
-        confirmToast = Toast.makeText(context, confirmMessage, Toast.LENGTH_LONG)
+        contentResolver = context.contentResolver
+
+        val savedTo = context.getString(R.string.saved_to, saveTo)
+        confirmToast = Toast.makeText(context, savedTo, Toast.LENGTH_LONG)
         return this
     }
 }
