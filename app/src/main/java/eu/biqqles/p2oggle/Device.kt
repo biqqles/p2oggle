@@ -8,6 +8,7 @@
 
 package eu.biqqles.p2oggle
 
+import android.os.Build
 import android.os.FileObserver
 import android.util.Log
 import java.io.*
@@ -35,8 +36,16 @@ object Device {
             DataInputStream(BufferedInputStream(FileInputStream(file)))
         }
 
-        inotify = object : FileObserver(File(file)) {
-            override fun onEvent(event: Int, path: String?) = processLastEvent()
+        // TODO gross - see if I can come up with a nicer way to write this
+        inotify = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            object : FileObserver(File(file)) {
+                override fun onEvent(event: Int, path: String?) = processLastEvent()
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            object : FileObserver(file) {
+                override fun onEvent(event: Int, path: String?) = processLastEvent()
+            }
         }
         inotify.startWatching()
         Log.i(logTag, "Watching device $file for events")
