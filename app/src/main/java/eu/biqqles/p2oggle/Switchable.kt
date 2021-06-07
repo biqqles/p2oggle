@@ -29,6 +29,7 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import java.io.File
 import java.io.FileDescriptor
 import java.lang.RuntimeException
 import java.text.DateFormat
@@ -381,14 +382,21 @@ object Dictaphone : SwitchableAction {
             put(MediaColumns.MIME_TYPE, "audio/mp3")
 
             // store the file in a subdirectory
-            @Suppress("DEPRECATION")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 put(MediaColumns.DISPLAY_NAME, filename)
                 put(MediaColumns.RELATIVE_PATH, saveTo)
             } else {
-                // RELATIVE_PATH was added in Q, so work around it by using DATA
+                // RELATIVE_PATH was added in Q, so work around it by using DATA and creating the file manually
+                @Suppress("DEPRECATION")
                 val music = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).path
-                put(MediaColumns.DATA, "$music/P2oggle/$filename")
+
+                with(File("$music/P2oggle/$filename")) {
+                    @Suppress("DEPRECATION")
+                    put(MediaColumns.DATA, path)
+
+                    parentFile!!.mkdir()
+                    createNewFile()
+                }
             }
         }
 
