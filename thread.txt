@@ -1,6 +1,6 @@
-The [url="https://en.wikipedia.org/wiki/Lenovo_P2"]Lenovo P2[/url] features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (pronounced "[i]P-Toggle[/i]") is an app which enables this switch and allows you to assign toggleable [i]actions[/i] to it.
+The [url=https://en.wikipedia.org/wiki/Lenovo_P2]Lenovo P2[/url] features a somewhat unusual hardware switch (referred to by Lenovo as the "one-key power saver"). On the stock ROM this switch toggles a battery saving mode but in aftermarket development it has remained unused - until now. P2oggle (pronounced "[i]P-Toggle[/i]") is an app which enables this switch and allows you to assign toggleable "actions" to it.
 
-[center][size="5"][u][url="https://github.com/biqqles/p2oggle/releases/download/v0.4/p2oggle-0.4.apk"]DOWNLOAD[size="3"](v0.4)[/size][/url][/u][/size][/center]
+[center][size=5][u][url=https://github.com/biqqles/p2oggle/releases/download/v1.1/p2oggle-1.1.apk]DOWNLOAD[size=3](v1.1)[/size][/url][/u][/size][/center]
 
 [b]Currently, available actions include:[/b]
 [list]
@@ -20,35 +20,77 @@ The [url="https://en.wikipedia.org/wiki/Lenovo_P2"]Lenovo P2[/url] features a so
 [*] Total silence
 [*] Play/pause
 [*] Caffeine
+[*] Dictaphone
 [/list]
 Actions can be configured separately for when the screen is on or off. If you have suggestions for any you think would be useful, please make them below and I will be happy to add them.
 
 Additionally you can configure P2oggle to broadcast switch events for other apps.
 
-[size="4"][b]Requirements[/b][/size]
+[size=4][b]Requirements[/b][/size]
 Since the Android input stack [url=https://source.android.com/devices/input#understanding-hid-usages-and-event-codes]more or less ignores[/url] the existence of hardware switches, P2oggle uses the kernel's input event interface (evdev) directly. It therefore [b]requires a rooted device[/b]. You will need a superuser binary that includes supolicy and BusyBox, e.g. Magisk.
 
 The service that listens for switch input consumes minimal resources: in my testing battery usage has never risen above 0% with memory consumption averaging about 25 MB, depending on the actions selected.
 
-P2oggle is compatible with the stock ROM and should work with all custom ROMs and kernels. I wrote it for the [font="monospace"]P2a42[/font] (global variant) but it should also be fully compatible with the [font="monospace"]P2c72[/font] (domestic variant). If it works for you please let me know.
+P2oggle is compatible with the stock ROM and should work with all custom ROMs and kernels. I wrote it for the [font=monospace]P2a42[/font] (global variant) but it should also be fully compatible with the [font=monospace]P2c72[/font] (domestic variant). If it works for you please let me know.
 
-If you are on stock you will probably want to disable the power saver mode from being bound to the switch in order to use P2oggle properly. You can do that by running [font="monospace"]su -c pm hide com.lenovo.powersetting[/font] in a terminal emulator or adb shell. Replace [font="monospace"]hide[/font] with [font="monospace"]unhide[/font] to reverse.
+If you are on stock you will probably want to disable the power saver mode from being bound to the switch in order to use P2oggle properly. You can do that by running [font=monospace]su -c pm hide com.lenovo.powersetting[/font] in a terminal emulator or adb shell. Replace [font=monospace]hide[/font] with [font=monospace]unhide[/font] to reverse.
 
-P2oggle is released under the Mozilla General Public License version 2.0. As always, please post any feedback/suggestions/bug reports below, or [url="https://github.com/biqqles/p2oggle/issues"]open an issue[/url] on GitHub if you prefer.
+P2oggle is released under the Mozilla General Public License version 2.0. As always, please post any feedback/suggestions/bug reports below, or [url=https://github.com/biqqles/p2oggle/issues]open an issue[/url] on GitHub if you prefer.
 
-[size="4"][b]Changelog[/b][/size]
-[b]Latest version - 0.4[/b]
+[size=4][b]Changelog[/b][/size]
+[b]Latest version - 1.1[/b]
+Changes in this release:
+
+[i]Enhancements[/i]
+[list]
+[*] New app icon
+[*] New overlay icons for Flashlight
+[*] Service notification is now hidden on lock screen by default
+[/list]
+
+[i]Optimisations[/i]
+[list]
+[*] Updated SDK version to 29
+[*] Write external storage is no longer requested on Android 10 and up
+[/list]
+
+[i]Bug fixes[/i]
+[list]
+[*] Fixed Dictaphone on Android 11 and up
+[/list]
+
+[b]Older versions[/b]
+[hide]
+[b]1.0[/b]
+Changes in this release:
+Enhancements
+[list]
+[*] Added much-requested Dictaphone action
+[/list]
+Optimisations
+[list]
+[*] Removed unnecessary library dependency
+[*] Many code cleanups and linter warnings fixed
+[/list]
+Bug fixes
+[list]
+[*] Fixed service unresponsive to configuration changes until restarted
+[*] Fixed Caffeine not working on all ROMs
+[*] Fixed overlay delay on Android 10+
+[*] Fixed horrible hangs when su access denied
+[*] Fixed su sometimes not being detected until app restart
+[/list]
+[b]0.4[/b]
 Changes in this release:
 [list]
 [*] New action: [i]Caffeine[/i]
 [*] Fixed a crash on unrooted devices
 [/list]
-[b]Older versions[/b]
-[hide][b]0.3[/b]
+[b]0.3[/b]
 Changes in this release:
 [list]
 [*] App should now be compatible with Android 10
-[*] Minimised number of [font="monospace"]su[/font] processes to reduce toast notification spam from Magisk and lag on enabling service
+[*] Minimised number of [font=monospace]su[/font] processes to reduce toast notification spam from Magisk and lag on enabling service
 [/list]
 [b]0.2[/b]
 New in this release:
@@ -70,4 +112,21 @@ Bug fixes in this release:
 [b]0.1[/b]
 [list]
 [*] Initial release
-[/list][/hide]
+[/list]
+[/hide]
+
+
+[b][u][size=4][PLAIN]XDA:DevDB Information[/PLAIN][/size][/u][/b]
+[size=3][b]P2oggle, Device Specific App for the Lenovo P2[/b][/size]
+
+[b][u]Contributors[/u][/b]
+[url=https://forum.xda-developers.com/member.php?u=6656408]Prospero.X-3[/url] 
+[b]Source Code:[/b] [url]https://github.com/biqqles/p2oggle[/url]
+
+
+[b][u]Version Information[/u]
+Status:[/b] Stable
+[b]Current Stable Version:[/b] 1.1
+
+[b]Created[/b] 2019-09-06
+[b]Last Updated[/b] 2021-05-12
