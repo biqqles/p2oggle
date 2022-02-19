@@ -5,11 +5,13 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "eu.biqqles.p2oggle"
+        versionCode 12
+        versionName '1.2'
+
         minSdkVersion 25  // last stock release for kuntao (7.1.1)
         //noinspection ExpiredTargetSdkVersion,OldTargetApi - not dealing with the IO library changes in R
         targetSdkVersion 29
-        versionCode 11
-        versionName '1.1'
+
         resValue "string", "org_xjy_android_treasure_authority", "${applicationId}.preferences"
     }
     
