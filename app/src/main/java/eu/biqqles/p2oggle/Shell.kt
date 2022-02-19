@@ -43,7 +43,7 @@ object Shell {
         input.flush()
 
         if (error.available() > 0) return false
-        while (output.read() != completionIndicator.toInt()) continue
+        while (output.read() != completionIndicator.code) continue
         return true
     }
 

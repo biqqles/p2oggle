@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "eu.biqqles.p2oggle"
         minSdkVersion 25  // last stock release for kuntao (7.1.1)
-        //noinspection OldTargetApi - not dealing with the IO library changes in R
+        //noinspection ExpiredTargetSdkVersion,OldTargetApi - not dealing with the IO library changes in R
         targetSdkVersion 29
         versionCode 11
         versionName '1.1'
@@ -24,7 +24,9 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.3.0"
+    //noinspection GradleDependency - latest version for sdk 29
+    implementation "androidx.appcompat:appcompat:1.3.1"
+    //noinspection GradleDependency - latest version for sdk 29
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation "org.xjy.android.treasure:treasure:1.0.2"
 }
