@@ -28,7 +28,9 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
     private lateinit var preferences: TreasurePreferences
 
     private val enabled: Boolean
-        get() = preferences.getBoolean("service_enabled", false) && Device.ensureReady()
+        get() = preferences.getBoolean("service_enabled", false) &&
+                Shell.isRootAvailable &&
+                Device.ensureReady()
 
     private inner class OnSwitch : Switchable {
         private val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -104,6 +106,8 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
             stopSelf(startId)
             return START_NOT_STICKY
         }
+
+        attachCallback()
         return START_STICKY
     }
 
@@ -113,7 +117,6 @@ class SwitchService : Service(), SharedPreferences.OnSharedPreferenceChangeListe
         preferences.registerOnSharedPreferenceChangeListener(this,
             listOf("action_screen_off", "action_screen_on", "show_overlay", "overlay_text",
                 "overlay_system_accent", "overlay_bg_colour"))
-        attachCallback()
     }
 
     private fun attachCallback() {
